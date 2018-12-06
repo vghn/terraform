@@ -1,0 +1,20 @@
+# Private
+.env
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+!/terraform/backend/terraform.tfstate
+
+# Ruby
+.bundle/
+vendor/
+Gemfile.lock
+gems.locked
+
+# Other
+pkg/
+tmp/
