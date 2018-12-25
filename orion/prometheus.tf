@@ -141,11 +141,6 @@ export DEBIAN_FRONTEND=noninteractive
 while ! apt-get -y update; do sleep 1; done
 sudo apt-get -q -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --allow-remove-essential upgrade
 
-echo 'Configure AWS Credentials'
-aws configure --profile ursa set region us-east-1
-aws configure --profile ursa set role_arn ${var.ursa_prometheus_role}
-aws configure --profile ursa set credential_source Ec2InstanceMetadata
-
 echo 'Mount EBS'
 sudo mkdir -p /data
 echo '/dev/xvdg  /data  ext4  defaults,nofail  0  2' | sudo tee -a /etc/fstab
@@ -161,12 +156,12 @@ sudo service docker stop
 sudo mkdir -p /var/lib/docker/swarm
 echo '/data/swarm  /var/lib/docker/swarm  none  defaults,bind  0  2' | sudo tee -a /etc/fstab
 sudo mount -a
-
-echo 'Restart services'
 sudo service docker start
 
 echo 'Reinitialize cluster'
 sudo docker swarm init --force-new-cluster --advertise-addr $$(curl -s  http://169.254.169.254/latest/meta-data/local-ipv4)
+
+echo 'Restart services'
 sudo service docker restart
 
 echo "FINISHED @ $(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed

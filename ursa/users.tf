@@ -6,14 +6,6 @@ resource "aws_iam_access_key" "mini_v1" {
   user = "${aws_iam_user.mini.name}"
 }
 
-resource "aws_iam_user" "zucu" {
-  name = "zucu"
-}
-
-resource "aws_iam_access_key" "zucu_v1" {
-  user = "${aws_iam_user.zucu.name}"
-}
-
 resource "aws_iam_user" "rhea" {
   name = "rhea"
 }
@@ -46,9 +38,23 @@ resource "aws_iam_user" "travis" {
   name = "travis"
 }
 
-resource "aws_iam_user_policy_attachment" "administrator_access" {
-  user       = "${aws_iam_user.travis.name}"
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+resource "aws_iam_user_policy" "travis" {
+  name   = "travis"
+  user   = "${aws_iam_user.travis.name}"
+  policy = "${data.aws_iam_policy_document.travis_user.json}"
+}
+
+data "aws_iam_policy_document" "travis_user" {
+  statement {
+    sid     = "AllowAssumeRole"
+    actions = ["sts:AssumeRole"]
+
+    resources = [
+      "${aws_iam_role.travis.arn}",
+      "${var.travis_orion_role_arn}",
+      "${var.travis_mec7_role_arn}",
+    ]
+  }
 }
 
 resource "aws_iam_access_key" "travis_v1" {
@@ -67,9 +73,14 @@ resource "aws_iam_user_policy" "vbot" {
 
 data "aws_iam_policy_document" "vbot_user" {
   statement {
-    sid       = "AllowAssumeRole"
-    actions   = ["sts:AssumeRole"]
-    resources = ["${var.vbot_role_arn}"]
+    sid     = "AllowAssumeRole"
+    actions = ["sts:AssumeRole"]
+
+    resources = [
+      "${aws_iam_role.vbot.arn}",
+      "${var.vbot_orion_role_arn}",
+      "${var.vbot_mec7_role_arn}",
+    ]
   }
 }
 

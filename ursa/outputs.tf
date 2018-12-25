@@ -48,19 +48,9 @@ output "travis_secret_access_key" {
   value       = "${aws_iam_access_key.travis_v1.secret}"
 }
 
-output "zucu_user_arn" {
-  description = "Travis user ARN"
-  value       = "${aws_iam_user.zucu.arn}"
-}
-
-output "zucu_access_key_id" {
-  description = "Zucu access key id"
-  value       = "${aws_iam_access_key.zucu_v1.id}"
-}
-
-output "zucu_secret_access_key" {
-  description = "Zucu secret access key"
-  value       = "${aws_iam_access_key.zucu_v1.secret}"
+output "travis_role_arn" {
+  description = "TravisCI Role ARN"
+  value       = "${aws_iam_role.travis.arn}"
 }
 
 # VBot
@@ -79,12 +69,12 @@ output "vbot_secret_access_key" {
   value       = "${aws_iam_access_key.vbot_v1.secret}"
 }
 
+output "vbot_role_arn" {
+  description = "VBot Role ARN"
+  value       = "${aws_iam_role.vbot.arn}"
+}
+
 output "prometheus_role_arn" {
   description = "Promethesu role ARN"
   value       = "${aws_iam_role.prometheus.arn}"
-}
-
-output "prometheus_backup_bucket" {
-  description = "The name of the backup bucket for Prometheus"
-  value       = "${module.backup_prometheus.bucket}"
 }

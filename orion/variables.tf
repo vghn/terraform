@@ -7,11 +7,7 @@ variable "travis_trusted_user_arn" {
 }
 
 variable "vbot_trusted_user_arn" {
-  description = "VBot user ARN"
-}
-
-variable "ursa_prometheus_role" {
-  description = "The trusted role in the main account"
+  description = "VBot User ARN"
 }
 
 variable "puppet_secret" {
@@ -24,10 +20,6 @@ variable "puppetdb_user" {
 
 variable "puppetdb_pass" {
   description = "PuppetDB password"
-}
-
-variable "prometheus_backup_bucket" {
-  description = "The Prometheus backup bucket"
 }
 
 variable "common_tags" {

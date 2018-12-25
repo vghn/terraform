@@ -1,3 +1,4 @@
+# Prometheus
 resource "aws_iam_role" "prometheus" {
   name               = "prometheus"
   description        = "Prometheus"
@@ -10,7 +11,7 @@ data "aws_iam_policy_document" "prometheus_assume_role" {
 
     principals {
       type        = "AWS"
-      identifiers = ["${var.prometheus_role_arn}"]
+      identifiers = ["${var.prometheus_trusted_role_arn}"]
     }
   }
 }
@@ -57,4 +58,50 @@ data "aws_iam_policy_document" "prometheus_role" {
 
     resources = ["*"]
   }
+}
+
+# TravisCI
+resource "aws_iam_role" "travis" {
+  name               = "travis"
+  description        = "TravisCI"
+  assume_role_policy = "${data.aws_iam_policy_document.travis_assume_role.json}"
+}
+
+data "aws_iam_policy_document" "travis_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["${aws_iam_user.travis.arn}"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "administrator_access" {
+  role       = "${aws_iam_role.travis.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
+# VBot
+resource "aws_iam_role" "vbot" {
+  name               = "vbot"
+  description        = "VBot"
+  assume_role_policy = "${data.aws_iam_policy_document.vbot_assume_role.json}"
+}
+
+data "aws_iam_policy_document" "vbot_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["${aws_iam_user.vbot.arn}"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "vbot" {
+  role       = "${aws_iam_role.vbot.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
