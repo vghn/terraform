@@ -8,7 +8,6 @@ terraform {
     acl            = "private"
     encrypt        = true
     dynamodb_table = "vgtf"
-    profile        = "ursa"
   }
 }
 
