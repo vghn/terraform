@@ -11,24 +11,13 @@ install:
     terraform version
 before_script: |
   . <( ( echo "$ENCRYPT_KEY" | base64 --decode ) |  gpg --batch --yes --decrypt --passphrase-fd 0 .env.gpg ) 2>/dev/null || true
-  if [[ "$TRAVIS_BRANCH" == master && "$TRAVIS_PULL_REQUEST" == false ]]; then
-    aws configure --profile default set aws_access_key_id "${TRAVIS_AWS_ACCESS_KEY_ID}"
-    aws configure --profile default set aws_secret_access_key "${TRAVIS_AWS_SECRET_ACCESS_KEY}"
-    aws configure --profile default set region us-east-1
-    aws configure --profile ursa set role_arn "${TRAVIS_AWS_URSA_ROLE_ARN}"
-    aws configure --profile ursa set source_profile default
-    aws configure --profile ursa set region us-east-1
-    aws configure --profile orion set role_arn "${TRAVIS_AWS_ORION_ROLE_ARN}"
-    aws configure --profile orion set source_profile default
-    aws configure --profile orion set region us-east-1
-    aws configure --profile mec7 set role_arn "${TRAVIS_AWS_MEC7_ROLE_ARN}"
-    aws configure --profile mec7 set source_profile default
-    aws configure --profile mec7 set region us-west-2
-  fi
+  mkdir -p ~/.aws
+  echo "${AWS_CREDS:-}" | base64 --decode --ignore-garbage > ~/.aws/credentials
+  chmod 600 ~/.aws/credentials
 script:
   - |
     if [[ "$TRAVIS_BRANCH" == master && "$TRAVIS_PULL_REQUEST" == false ]]; then
-      AWS_PROFILE=ursa ./tf init
+      ./tf init
       ./tf validate
       ./tf plan
       ./tf apply -auto-approve
