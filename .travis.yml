@@ -10,9 +10,8 @@ install:
     unzip -d ~/bin terraform.zip
     terraform version
 before_script: |
-  . <( ( echo "$ENCRYPT_KEY" | base64 --decode ) |  gpg --batch --yes --decrypt --passphrase-fd 0 .env.gpg ) 2>/dev/null || true
   mkdir -p ~/.aws
-  echo "${AWS_CREDS:-}" | base64 --decode --ignore-garbage > ~/.aws/credentials
+  ( echo "$ENCRYPT_KEY" | base64 --decode ) |  gpg --batch --yes --decrypt --passphrase-fd 0 --output ~/.aws/credentials .aws.gpg
   chmod 600 ~/.aws/credentials
 script:
   - |
