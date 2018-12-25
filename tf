@@ -26,6 +26,9 @@ APPDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 VERSION=$(git --git-dir="${APPDIR}/.git" --work-tree="${APPDIR}" describe --always --tags)
 export NOW TMPDIR APPDIR VERSION
 
+# AWS
+export AWS_PROFILE='ursa'
+
 # Output
 e_ok()    { printf "  ✔  %s\\n" "$@" ;}
 e_info()  { printf "  ➜  %s\\n" "$@" ;}
