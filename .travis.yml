@@ -28,7 +28,7 @@ before_script: |
 script:
   - |
     if [[ "$TRAVIS_BRANCH" == master && "$TRAVIS_PULL_REQUEST" == false ]]; then
-      ./tf init
+      AWS_PROFILE=ursa ./tf init
       ./tf validate
       ./tf plan
       ./tf apply -auto-approve
