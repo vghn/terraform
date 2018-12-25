@@ -1,3 +1,4 @@
+# Notifications
 output "orion_notifications_topic_arn" {
   sensitive   = true
   description = "The Orion notifications topic ARN"
@@ -10,15 +11,10 @@ output "ursa_notifications_topic_arn" {
   value       = "${module.ursa.notifications_topic_arn}"
 }
 
-# Unifi
-output "unifi_instance_public_ip" {
-  description = "The IP address of the Unifi instance"
-  value       = "${module.mec7.unifi_instance_public_ip}"
-}
-
-output "unifi_instance_public_dns" {
-  description = "The DNS address of the Unifi instance"
-  value       = "${module.mec7.unifi_instance_public_dns}"
+output "mec7_notifications_topic_arn" {
+  sensitive   = true
+  description = "The MEC7 notifications topic ARN"
+  value       = "${module.mec7.notifications_topic_arn}"
 }
 
 # PuppetDB
@@ -38,9 +34,10 @@ output "prometheus_instance_public_dns" {
   value       = "${module.orion.prometheus_instance_public_dns}"
 }
 
-output "prometheus_efs_dns" {
-  description = "The DNS of the Prometheus EFS"
-  value       = "${module.orion.prometheus_efs_dns}"
+output "prometheus_mec7_role_arn" {
+  sensitive   = true
+  description = "Prometheus Role ARN for MEC7"
+  value       = "${module.mec7.prometheus_role_arn}"
 }
 
 output "mini_user_arn" {
@@ -97,43 +94,31 @@ output "travis_secret_access_key" {
   value       = "${module.ursa.travis_secret_access_key}"
 }
 
+output "travis_ursa_role_arn" {
+  sensitive   = true
+  description = "The TravisCI role ARN on Ursa"
+  value       = "${module.ursa.travis_role_arn}"
+}
+
 output "travis_orion_role_arn" {
   sensitive   = true
   description = "The TravisCI role ARN on Orion"
   value       = "${module.orion.travis_role_arn}"
 }
 
-output "travis_orion_role_id" {
+output "travis_mec7_role_arn" {
   sensitive   = true
-  description = "The TravisCI role id on Orion"
-  value       = "${module.orion.travis_role_id}"
+  description = "The TravisCI role ARN on MEC7"
+  value       = "${module.mec7.travis_role_arn}"
 }
 
-output "zucu_user_arn" {
-  sensitive   = true
-  description = "Zucu user ARN"
-  value       = "${module.ursa.zucu_user_arn}"
-}
-
-output "zucu_access_key_id" {
-  sensitive   = true
-  description = "Zucu access key id"
-  value       = "${module.ursa.zucu_access_key_id}"
-}
-
-output "zucu_secret_access_key" {
-  sensitive   = true
-  description = "Zucu secret access key"
-  value       = "${module.ursa.zucu_secret_access_key}"
-}
-
+# VBot
 output "vbot_user_arn" {
   sensitive   = true
   description = "VBot user ARN"
   value       = "${module.ursa.vbot_user_arn}"
 }
 
-# VBot
 output "vbot_access_key_id" {
   sensitive   = true
   description = "VBot access key id"
@@ -146,14 +131,20 @@ output "vbot_secret_access_key" {
   value       = "${module.ursa.vbot_secret_access_key}"
 }
 
-output "vbot_role_arn" {
+output "vbot_ursa_role_arn" {
   sensitive   = true
-  description = "VBot role ARN"
+  description = "VBot Role ARN for Ursa"
+  value       = "${module.ursa.vbot_role_arn}"
+}
+
+output "vbot_orion_role_arn" {
+  sensitive   = true
+  description = "VBot Role ARN for Orion"
   value       = "${module.orion.vbot_role_arn}"
 }
 
-output "vbot_secrets_bucket" {
+output "vbot_mec7_role_arn" {
   sensitive   = true
-  description = "The name of the secrets bucket for VBot"
-  value       = "${module.orion.vbot_secrets_bucket}"
+  description = "VBot Role ARN for MEC7"
+  value       = "${module.mec7.vbot_role_arn}"
 }
