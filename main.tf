@@ -27,13 +27,6 @@ provider "aws" {
 }
 
 provider "aws" {
-  alias   = "ursa"
-  profile = "ursa"
-  region  = "us-east-1"
-  version = "~> 1.28"
-}
-
-provider "aws" {
   alias   = "orion"
   profile = "orion"
   region  = "us-east-1"
@@ -54,13 +47,6 @@ provider "cloudflare" {
 }
 
 provider "cloudflare" {
-  alias   = "vgh"
-  version = "~> 1.0"
-  email   = "${data.aws_ssm_parameter.cf_email.value}"
-  token   = "${data.aws_ssm_parameter.cf_token.value}"
-}
-
-provider "cloudflare" {
   alias   = "mec7"
   version = "~> 1.0"
   email   = "${data.aws_ssm_parameter.cosmin_cf_email.value}"
@@ -68,12 +54,6 @@ provider "cloudflare" {
 }
 
 provider "acme" {
-  server_url = "https://acme-v02.api.letsencrypt.org/directory"
-  version    = "~> 1.0"
-}
-
-provider "acme" {
-  alias      = "production"
   server_url = "https://acme-v02.api.letsencrypt.org/directory"
   version    = "~> 1.0"
 }
@@ -99,11 +79,6 @@ provider "null" {
 module "ursa" {
   source = "./ursa"
 
-  providers = {
-    aws        = "aws.ursa"
-    cloudflare = "cloudflare.vgh"
-  }
-
   email                       = "${data.aws_ssm_parameter.email.value}"
   prometheus_trusted_role_arn = "${module.orion.prometheus_role_arn}"
   prometheus_role_id          = "${module.orion.prometheus_role_id}"
@@ -124,8 +99,7 @@ module "orion" {
   source = "./orion"
 
   providers = {
-    aws        = "aws.orion"
-    cloudflare = "cloudflare.vgh"
+    aws = "aws.orion"
   }
 
   email                   = "${data.aws_ssm_parameter.email.value}"
