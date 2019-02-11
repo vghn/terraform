@@ -2,6 +2,9 @@
 .aws
 .env
 
+# Lambda archives
+lambda.zip
+
 # Terraform
 **/.terraform/*
 *.tfstate

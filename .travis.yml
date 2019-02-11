@@ -2,8 +2,6 @@ dist: xenial
 env:
   TF_VERSION: '0.11.11'
 install:
-  # Install PIP packages
-  - pip install --user --upgrade awscli && aws --version
   # Install Hashicorp's Terraform
   - |
     curl -L -o terraform.zip "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
@@ -11,16 +9,18 @@ install:
     terraform version
 before_script: |
   if [[ "$TRAVIS_BRANCH" == master && "$TRAVIS_PULL_REQUEST" == false ]]; then
+    echo 'Decrypting AWS Credentials'
     mkdir -p ~/.aws
+    gpg --decrypt --passphrase "$(echo "$ENCRYPT_KEY" | base64 --decode)" --batch --yes --output ~/.aws/credentials .aws.gpg
     ( echo "$ENCRYPT_KEY" | base64 --decode ) |  gpg --batch --yes --decrypt --passphrase-fd 0 --output ~/.aws/credentials .aws.gpg
-    chmod 600 ~/.aws/credentials
+    chmod 400 ~/.aws/credentials
   fi
 script: |
   if [[ "$TRAVIS_BRANCH" == master && "$TRAVIS_PULL_REQUEST" == false ]]; then
-    ./tf init
-    ./tf validate
-    ./tf plan
-    ./tf apply -auto-approve
+    terraform init
+    terraform validate
+    terraform plan
+    terraform apply -auto-approve
   fi
 notifications:
   webhooks:
