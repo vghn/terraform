@@ -1,3 +1,15 @@
+data "aws_region" "current" {}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_user" "vlad" {
+  user_name = "vlad"
+}
+
+data "aws_iam_group" "Admins" {
+  group_name = "Admins"
+}
+
 module "notifications" {
   source = "../modules/notifications"
   email  = "${var.email}"
@@ -14,18 +26,14 @@ module "billing" {
   common_tags = "${var.common_tags}"
 }
 
-module "cloudtrail" {
-  source = "../modules/cloudtrail"
+module "cloudwatch_event_watcher" {
+  source = "../modules/cloudwatch_event_watcher"
 
   common_tags = "${var.common_tags}"
 }
 
-data "aws_caller_identity" "ursa" {}
+module "cloudtrail" {
+  source = "../modules/cloudtrail"
 
-data "aws_iam_user" "vlad" {
-  user_name = "vlad"
-}
-
-data "aws_iam_group" "Admins" {
-  group_name = "Admins"
+  common_tags = "${var.common_tags}"
 }

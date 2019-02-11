@@ -2,6 +2,10 @@ variable "email" {
   description = "Notifications email"
 }
 
+variable "slack_alerts_webhook_url" {
+  description = "The WebHook URL of the #alerts channel"
+}
+
 variable "prometheus_trusted_role_arn" {
   description = "Prometheus role ARN"
 }

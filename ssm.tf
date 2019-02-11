@@ -3,6 +3,11 @@ data "aws_ssm_parameter" "email" {
   name = "/vgh/email"
 }
 
+# Slack
+data "aws_ssm_parameter" "slack_alerts_webhook_url" {
+  name = "SlackAlertsHookURL"
+}
+
 # CloudFlare
 data "aws_ssm_parameter" "cf_email" {
   name = "/cloudflare/email"

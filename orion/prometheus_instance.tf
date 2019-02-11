@@ -1,76 +1,4 @@
-# Assets S3 Bucket
-resource "aws_s3_bucket" "prometheus" {
-  bucket = "prometheus-vghn"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
-  lifecycle_rule {
-    id      = "Remove old versions"
-    prefix  = ""
-    enabled = true
-
-    noncurrent_version_expiration {
-      days = 7
-    }
-  }
-
-  tags = "${var.common_tags}"
-}
-
-# Prometheus Security Group
-module "prometheus_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "2.1.0"
-
-  name        = "Prometheus"
-  description = "Security group for the Prometheus"
-  vpc_id      = "${module.vpc.vpc_id}"
-
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-
-  ingress_rules = [
-    "ssh-tcp",
-    "https-443-tcp",
-    "http-80-tcp",
-  ]
-
-  ingress_with_cidr_blocks = [
-    {
-      from_port   = 8
-      to_port     = 0
-      protocol    = "icmp"
-      description = "Ping"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      from_port   = 10514
-      to_port     = 10514
-      protocol    = "tcp"
-      description = "Log server ports"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-
-  ingress_with_self = [{
-    rule = "all-all"
-  }]
-
-  egress_rules = ["all-all"]
-
-  tags = "${var.common_tags}"
-}
-
+# Prometheus Instance
 resource "aws_iam_instance_profile" "prometheus" {
   name = "prometheus"
   role = "${aws_iam_role.prometheus.name}"
@@ -107,7 +35,7 @@ resource "aws_eip" "prometheus" {
 
 data "null_data_source" "prometheus" {
   inputs = {
-    public_dns = "ec2-${replace(join("", aws_eip.prometheus.*.public_ip), ".", "-")}.${data.aws_region.default.name == "us-east-1" ? "compute-1" : "${data.aws_region.default.name}.compute"}.amazonaws.com"
+    public_dns = "ec2-${replace(join("", aws_eip.prometheus.*.public_ip), ".", "-")}.${data.aws_region.current.name == "us-east-1" ? "compute-1" : "${data.aws_region.current.name}.compute"}.amazonaws.com"
   }
 }
 
@@ -183,7 +111,8 @@ resource "aws_ebs_volume" "prometheus_data" {
   tags = "${merge(
     var.common_tags,
     map(
-      "Name", "Prometheus Data"
+      "Name", "Prometheus Data",
+      "Snapshot", "true",
     )
   )}"
 }
