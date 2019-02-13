@@ -82,26 +82,3 @@ resource "aws_iam_role_policy_attachment" "administrator_access" {
   role       = "${aws_iam_role.travis.name}"
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
-
-# VBot Role
-resource "aws_iam_role" "vbot" {
-  name               = "vbot"
-  description        = "VBot"
-  assume_role_policy = "${data.aws_iam_policy_document.vbot_assume_role.json}"
-}
-
-data "aws_iam_policy_document" "vbot_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["${var.vbot_trusted_user_arn}"]
-    }
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "vbot" {
-  role       = "${aws_iam_role.vbot.name}"
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-}

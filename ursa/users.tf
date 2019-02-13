@@ -78,8 +78,6 @@ data "aws_iam_policy_document" "vbot_user" {
 
     resources = [
       "${aws_iam_role.vbot.arn}",
-      "${var.vbot_orion_role_arn}",
-      "${var.vbot_mec7_role_arn}",
     ]
   }
 }

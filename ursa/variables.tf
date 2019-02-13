@@ -18,14 +18,6 @@ variable "travis_mec7_role_arn" {
   description = "TravisCI role ARN for MEC7"
 }
 
-variable "vbot_orion_role_arn" {
-  description = "VBot role ARN for Orion"
-}
-
-variable "vbot_mec7_role_arn" {
-  description = "VBot role ARN for MEC7"
-}
-
 variable "common_tags" {
   description = "Tags that should be applied to all resources"
   type        = "map"

@@ -4,8 +4,12 @@ data "aws_ssm_parameter" "email" {
 }
 
 # Slack
-data "aws_ssm_parameter" "slack_alerts_webhook_url" {
-  name = "SlackAlertsHookURL"
+data "aws_ssm_parameter" "vbot_slack_verification_token" {
+  name = "/vbot/SlackVerificationToken"
+}
+
+data "aws_ssm_parameter" "vbot_slack_alerts_webhook_url" {
+  name = "/vbot/SlackAlertsHookURL"
 }
 
 # CloudFlare

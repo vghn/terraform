@@ -1,6 +1,7 @@
 # Lambda execution role
 resource "aws_iam_role" "lambda" {
-  name               = "${var.name}"
+  name               = "cloudwatch-event-watcher"
+  description        = "CloudWatch Event Watcher"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 

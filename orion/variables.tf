@@ -2,16 +2,12 @@ variable "email" {
   description = "Notifications email"
 }
 
-variable "slack_alerts_webhook_url" {
-  description = "The WebHook URL of the #alerts channel"
+variable "vbot_slack_alerts_webhook_url" {
+  description = "The WebHook URL of the VBot #Alerts channel"
 }
 
 variable "travis_trusted_user_arn" {
   description = "Travis user ARN"
-}
-
-variable "vbot_trusted_user_arn" {
-  description = "VBot User ARN"
 }
 
 variable "puppet_secret" {

@@ -37,9 +37,3 @@ output "travis_role_arn" {
   description = "TravisCI Role ARN"
   value       = "${aws_iam_role.travis.arn}"
 }
-
-# VBot
-output "vbot_role_arn" {
-  description = "VBot Role ARN"
-  value       = "${aws_iam_role.vbot.arn}"
-}

@@ -131,20 +131,8 @@ output "vbot_secret_access_key" {
   value       = "${module.ursa.vbot_secret_access_key}"
 }
 
-output "vbot_ursa_role_arn" {
+output "vbot_role_arn" {
   sensitive   = true
   description = "VBot Role ARN for Ursa"
   value       = "${module.ursa.vbot_role_arn}"
-}
-
-output "vbot_orion_role_arn" {
-  sensitive   = true
-  description = "VBot Role ARN for Orion"
-  value       = "${module.orion.vbot_role_arn}"
-}
-
-output "vbot_mec7_role_arn" {
-  sensitive   = true
-  description = "VBot Role ARN for MEC7"
-  value       = "${module.mec7.vbot_role_arn}"
 }
