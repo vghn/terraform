@@ -9,7 +9,6 @@ install:
     terraform version
 before_script: |
   if [[ "$TRAVIS_BRANCH" == master && "$TRAVIS_PULL_REQUEST" == false ]]; then
-    echo 'Decrypting AWS Credentials'
     gpg --decrypt --passphrase "$(echo "$ENCRYPT_KEY" | base64 --decode)" --batch --yes --output .aws .aws.gpg
     chmod 400 .aws
   fi
