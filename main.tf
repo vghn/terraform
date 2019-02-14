@@ -2,14 +2,13 @@ terraform {
   required_version = "~> 0.11"
 
   backend "s3" {
-    bucket                  = "vgtf"
-    key                     = "terraform.tfstate"
-    region                  = "us-east-1"
-    acl                     = "private"
-    encrypt                 = true
-    dynamodb_table          = "vgtf"
-    shared_credentials_file = ".aws"
-    role_arn                = "arn:aws:iam::825581640935:role/travis"
+    bucket         = "vgtf"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    acl            = "private"
+    encrypt        = true
+    dynamodb_table = "vgtf"
+    profile        = "ursa"
   }
 }
 
@@ -22,35 +21,20 @@ locals {
 }
 
 provider "aws" {
-  shared_credentials_file = ".aws"
-
-  assume_role = {
-    role_arn = "arn:aws:iam::825581640935:role/travis"
-  }
-
+  profile = "ursa"
   region  = "us-east-1"
   version = "~> 1.58"
 }
 
 provider "aws" {
-  shared_credentials_file = ".aws"
-
-  assume_role = {
-    role_arn = "arn:aws:iam::496927869729:role/travis"
-  }
-
+  profile = "orion"
   alias   = "orion"
   region  = "us-east-1"
   version = "~> 1.58"
 }
 
 provider "aws" {
-  shared_credentials_file = ".aws"
-
-  assume_role = {
-    role_arn = "arn:aws:iam::972424615092:role/travis"
-  }
-
+  profile = "mec7"
   alias   = "mec7"
   region  = "us-west-2"
   version = "~> 1.58"
