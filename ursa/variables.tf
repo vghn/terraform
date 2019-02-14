@@ -10,12 +10,12 @@ variable "prometheus_role_id" {
   description = "Prometheus role id"
 }
 
-variable "travis_orion_role_arn" {
-  description = "TravisCI role ARN for Orion"
+variable "terraform_orion_role_arn" {
+  description = "Terraform role ARN for Orion"
 }
 
-variable "travis_mec7_role_arn" {
-  description = "TravisCI role ARN for MEC7"
+variable "terraform_mec7_role_arn" {
+  description = "Terraform role ARN for MEC7"
 }
 
 variable "common_tags" {

@@ -10,8 +10,8 @@ output "prometheus_role_arn" {
   value       = "${aws_iam_role.prometheus.arn}"
 }
 
-# TravisCI
-output "travis_role_arn" {
-  description = "TravisCI Role ARN"
-  value       = "${aws_iam_role.travis.arn}"
+# Terraform
+output "terraform_role_arn" {
+  description = "Terraform Role ARN"
+  value       = "${aws_iam_role.terraform.arn}"
 }

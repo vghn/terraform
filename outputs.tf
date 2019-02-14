@@ -40,6 +40,7 @@ output "prometheus_mec7_role_arn" {
   value       = "${module.mec7.prometheus_role_arn}"
 }
 
+# Mini
 output "mini_user_arn" {
   sensitive   = true
   description = "Mini user ARN"
@@ -58,6 +59,7 @@ output "mini_secret_access_key" {
   value       = "${module.ursa.mini_secret_access_key}"
 }
 
+# Rhea
 output "rhea_user_arn" {
   sensitive   = true
   description = "Rhea user ARN"
@@ -76,40 +78,41 @@ output "rhea_secret_access_key" {
   value       = "${module.ursa.rhea_secret_access_key}"
 }
 
-output "travis_user_arn" {
+# Terraform
+output "terraform_user_arn" {
   sensitive   = true
-  description = "Travis user ARN"
-  value       = "${module.ursa.travis_user_arn}"
+  description = "Terraform user ARN"
+  value       = "${module.ursa.terraform_user_arn}"
 }
 
-output "travis_access_key_id" {
+output "terraform_access_key_id" {
   sensitive   = true
-  description = "TravisCI access key id"
-  value       = "${module.ursa.travis_access_key_id}"
+  description = "Terraform access key id"
+  value       = "${module.ursa.terraform_access_key_id}"
 }
 
-output "travis_secret_access_key" {
+output "terraform_secret_access_key" {
   sensitive   = true
-  description = "TravisCI secret access key"
-  value       = "${module.ursa.travis_secret_access_key}"
+  description = "Terraform secret access key"
+  value       = "${module.ursa.terraform_secret_access_key}"
 }
 
-output "travis_ursa_role_arn" {
+output "terraform_ursa_role_arn" {
   sensitive   = true
-  description = "The TravisCI role ARN on Ursa"
-  value       = "${module.ursa.travis_role_arn}"
+  description = "Terraform role ARN on Ursa"
+  value       = "${module.ursa.terraform_role_arn}"
 }
 
-output "travis_orion_role_arn" {
+output "terraform_orion_role_arn" {
   sensitive   = true
-  description = "The TravisCI role ARN on Orion"
-  value       = "${module.orion.travis_role_arn}"
+  description = "Terraform role ARN on Orion"
+  value       = "${module.orion.terraform_role_arn}"
 }
 
-output "travis_mec7_role_arn" {
+output "terraform_mec7_role_arn" {
   sensitive   = true
-  description = "The TravisCI role ARN on MEC7"
-  value       = "${module.mec7.travis_role_arn}"
+  description = "Terraform role ARN on MEC7"
+  value       = "${module.mec7.terraform_role_arn}"
 }
 
 # VBot

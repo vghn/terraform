@@ -32,8 +32,8 @@ output "prometheus_role_id" {
   value       = "${aws_iam_role.prometheus.unique_id}"
 }
 
-# TravisCI
-output "travis_role_arn" {
-  description = "TravisCI Role ARN"
-  value       = "${aws_iam_role.travis.arn}"
+# Terraform
+output "terraform_role_arn" {
+  description = "Terraform Role ARN"
+  value       = "${aws_iam_role.terraform.arn}"
 }

@@ -6,8 +6,8 @@ variable "vbot_slack_alerts_webhook_url" {
   description = "The WebHook URL of the VBot #Alerts channel"
 }
 
-variable "travis_trusted_user_arn" {
-  description = "Travis user ARN"
+variable "terraform_trusted_user_arn" {
+  description = "Terraform user ARN"
 }
 
 variable "puppet_secret" {

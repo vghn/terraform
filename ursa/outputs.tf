@@ -33,24 +33,25 @@ output "rhea_secret_access_key" {
   value       = "${aws_iam_access_key.rhea_v1.secret}"
 }
 
-output "travis_user_arn" {
-  description = "Travis user ARN"
-  value       = "${aws_iam_user.travis.arn}"
+# Terraform
+output "terraform_user_arn" {
+  description = "Terraform user ARN"
+  value       = "${aws_iam_user.terraform.arn}"
 }
 
-output "travis_access_key_id" {
-  description = "TravisCI access key id"
-  value       = "${aws_iam_access_key.travis_v1.id}"
+output "terraform_access_key_id" {
+  description = "Terraform access key id"
+  value       = "${aws_iam_access_key.terraform_v1.id}"
 }
 
-output "travis_secret_access_key" {
-  description = "TravisCI secret access key"
-  value       = "${aws_iam_access_key.travis_v1.secret}"
+output "terraform_secret_access_key" {
+  description = "Terraform secret access key"
+  value       = "${aws_iam_access_key.terraform_v1.secret}"
 }
 
-output "travis_role_arn" {
-  description = "TravisCI Role ARN"
-  value       = "${aws_iam_role.travis.arn}"
+output "terraform_role_arn" {
+  description = "Terraform Role ARN"
+  value       = "${aws_iam_role.terraform.arn}"
 }
 
 # VBot

@@ -60,26 +60,26 @@ data "aws_iam_policy_document" "prometheus_role" {
   }
 }
 
-# TravisCI
-resource "aws_iam_role" "travis" {
-  name               = "travis"
-  description        = "TravisCI"
-  assume_role_policy = "${data.aws_iam_policy_document.travis_assume_role.json}"
+# Terraform
+resource "aws_iam_role" "terraform" {
+  name               = "terraform"
+  description        = "Terraform"
+  assume_role_policy = "${data.aws_iam_policy_document.terraform_assume_role.json}"
 }
 
-data "aws_iam_policy_document" "travis_assume_role" {
+data "aws_iam_policy_document" "terraform_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
 
     principals {
       type        = "AWS"
-      identifiers = ["${aws_iam_user.travis.arn}"]
+      identifiers = ["${aws_iam_user.terraform.arn}"]
     }
   }
 }
 
-resource "aws_iam_role_policy_attachment" "administrator_access" {
-  role       = "${aws_iam_role.travis.name}"
+resource "aws_iam_role_policy_attachment" "terraform_administrator_access" {
+  role       = "${aws_iam_role.terraform.name}"
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 

@@ -1,3 +1,4 @@
+# Mini
 resource "aws_iam_user" "mini" {
   name = "mini"
 }
@@ -6,6 +7,7 @@ resource "aws_iam_access_key" "mini_v1" {
   user = "${aws_iam_user.mini.name}"
 }
 
+# Rhea
 resource "aws_iam_user" "rhea" {
   name = "rhea"
 }
@@ -34,33 +36,35 @@ resource "aws_iam_access_key" "rhea_v1" {
   user = "${aws_iam_user.rhea.name}"
 }
 
-resource "aws_iam_user" "travis" {
-  name = "travis"
+# Terraform
+resource "aws_iam_user" "terraform" {
+  name = "terraform"
 }
 
-resource "aws_iam_user_policy" "travis" {
-  name   = "travis"
-  user   = "${aws_iam_user.travis.name}"
-  policy = "${data.aws_iam_policy_document.travis_user.json}"
+resource "aws_iam_user_policy" "terraform" {
+  name   = "terraform"
+  user   = "${aws_iam_user.terraform.name}"
+  policy = "${data.aws_iam_policy_document.terraform_user.json}"
 }
 
-data "aws_iam_policy_document" "travis_user" {
+data "aws_iam_policy_document" "terraform_user" {
   statement {
     sid     = "AllowAssumeRole"
     actions = ["sts:AssumeRole"]
 
     resources = [
-      "${aws_iam_role.travis.arn}",
-      "${var.travis_orion_role_arn}",
-      "${var.travis_mec7_role_arn}",
+      "${aws_iam_role.terraform.arn}",
+      "${var.terraform_orion_role_arn}",
+      "${var.terraform_mec7_role_arn}",
     ]
   }
 }
 
-resource "aws_iam_access_key" "travis_v1" {
-  user = "${aws_iam_user.travis.name}"
+resource "aws_iam_access_key" "terraform_v1" {
+  user = "${aws_iam_user.terraform.name}"
 }
 
+# VBot
 resource "aws_iam_user" "vbot" {
   name = "vbot"
 }

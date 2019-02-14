@@ -10,8 +10,8 @@ variable "prometheus_trusted_role_arn" {
   description = "Prometheus role ARN"
 }
 
-variable "travis_trusted_user_arn" {
-  description = "Travis user ARN"
+variable "terraform_trusted_user_arn" {
+  description = "Terraform user ARN"
 }
 
 variable "common_tags" {

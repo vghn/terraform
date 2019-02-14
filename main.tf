@@ -86,8 +86,8 @@ module "ursa" {
   email                       = "${data.aws_ssm_parameter.email.value}"
   prometheus_trusted_role_arn = "${module.orion.prometheus_role_arn}"
   prometheus_role_id          = "${module.orion.prometheus_role_id}"
-  travis_orion_role_arn       = "${module.orion.travis_role_arn}"
-  travis_mec7_role_arn        = "${module.mec7.travis_role_arn}"
+  terraform_orion_role_arn    = "${module.orion.terraform_role_arn}"
+  terraform_mec7_role_arn     = "${module.mec7.terraform_role_arn}"
 
   common_tags = "${merge(
     local.common_tags,
@@ -109,7 +109,7 @@ module "orion" {
   puppet_secret                 = "${data.aws_ssm_parameter.puppet_secret.value}"
   puppetdb_user                 = "${data.aws_ssm_parameter.puppetdb_user.value}"
   puppetdb_pass                 = "${data.aws_ssm_parameter.puppetdb_pass.value}"
-  travis_trusted_user_arn       = "${module.ursa.travis_user_arn}"
+  terraform_trusted_user_arn    = "${module.ursa.terraform_user_arn}"
 
   common_tags = "${merge(
     local.common_tags,
@@ -130,7 +130,7 @@ module "mec7" {
   email                         = "${data.aws_ssm_parameter.email.value}"
   vbot_slack_alerts_webhook_url = "${data.aws_ssm_parameter.vbot_slack_alerts_webhook_url.value}"
   prometheus_trusted_role_arn   = "${module.orion.prometheus_role_arn}"
-  travis_trusted_user_arn       = "${module.ursa.travis_user_arn}"
+  terraform_trusted_user_arn    = "${module.ursa.terraform_user_arn}"
 
   common_tags = "${merge(
     local.common_tags,
