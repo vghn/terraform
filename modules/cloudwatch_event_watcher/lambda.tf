@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "lambda" {
 data "archive_file" "lambda" {
   type        = "zip"
   source_dir  = "${path.module}/lambda"
-  output_path = "${path.module}/lambda.zip"
+  output_path = "${var.name}-lambda.zip"
 }
 
 # Lambda Function

@@ -3,7 +3,7 @@
 .env
 
 # Lambda archives
-lambda.zip
+*-lambda.zip
 
 # Terraform
 **/.terraform/*
