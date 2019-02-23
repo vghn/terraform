@@ -4,12 +4,6 @@ output "notifications_topic_arn" {
   value       = "${module.notifications.topic_arn}"
 }
 
-# PuppetDB
-output "puppetdb_instance_address" {
-  description = "The address of the PuppetDB RDS instance"
-  value       = "${module.puppetdb.this_db_instance_address}"
-}
-
 # Prometheus instance
 output "prometheus_instance_public_ip" {
   description = "The IP address of the Prometheus instance"

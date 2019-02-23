@@ -1,3 +1,46 @@
+# Prometheus Instance Security Group
+module "prometheus_sg" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "2.1.0"
+
+  name        = "Prometheus"
+  description = "Security group for the Prometheus"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+
+  ingress_rules = [
+    "ssh-tcp",
+    "https-443-tcp",
+    "http-80-tcp",
+  ]
+
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 8
+      to_port     = 0
+      protocol    = "icmp"
+      description = "Ping"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      from_port   = 10514
+      to_port     = 10514
+      protocol    = "tcp"
+      description = "Log server ports"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
+
+  ingress_with_self = [{
+    rule = "all-all"
+  }]
+
+  egress_rules = ["all-all"]
+
+  tags = "${var.common_tags}"
+}
+
 # Prometheus Instance
 resource "aws_iam_instance_profile" "prometheus" {
   name = "prometheus"
@@ -74,11 +117,6 @@ sudo mkdir -p /data
 echo '/dev/xvdg  /data  ext4  defaults,nofail  0  2' | sudo tee -a /etc/fstab
 sudo mount -a
 
-echo 'Mount EFS'
-sudo mkdir -p /mnt/efs
-echo '${aws_efs_file_system.prometheus.dns_name}:/  /mnt/efs  nfs  nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport  0  2' | sudo tee -a /etc/fstab
-sudo mount -a
-
 echo 'Restore Swarm'
 sudo service docker stop
 sudo mkdir -p /var/lib/docker/swarm
@@ -92,7 +130,7 @@ sudo docker swarm init --force-new-cluster --advertise-addr $$(curl -s  http://1
 echo 'Restart services'
 sudo service docker restart
 
-echo "FINISHED @ $(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
+echo "FINISHED @ $$(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
 DATA
 
   tags = "${merge(

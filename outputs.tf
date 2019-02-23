@@ -21,8 +21,6 @@ Notification topic arns:
   - Orion: ${module.orion.notifications_topic_arn}
   - MEC7: ${module.mec7.notifications_topic_arn}
 
-The address of the PuppetDB RDS instance ${module.orion.puppetdb_instance_address}
-
 Prometheus instance: ${module.orion.prometheus_instance_public_dns} (${module.orion.prometheus_instance_public_ip})
 
 EOF

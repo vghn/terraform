@@ -106,9 +106,6 @@ module "orion" {
 
   email                         = "${data.aws_ssm_parameter.email.value}"
   vbot_slack_alerts_webhook_url = "${data.aws_ssm_parameter.vbot_slack_alerts_webhook_url.value}"
-  puppet_secret                 = "${data.aws_ssm_parameter.puppet_secret.value}"
-  puppetdb_user                 = "${data.aws_ssm_parameter.puppetdb_user.value}"
-  puppetdb_pass                 = "${data.aws_ssm_parameter.puppetdb_pass.value}"
   terraform_trusted_user_arn    = "${module.ursa.terraform_user_arn}"
 
   common_tags = "${merge(
