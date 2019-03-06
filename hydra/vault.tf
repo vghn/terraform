@@ -197,6 +197,19 @@ data "aws_iam_policy_document" "vault_role" {
     resources = ["*"]
   }
 
+  # Used by the AWS authentication backend
+  statement {
+    sid = "AllowIAMAuth"
+    actions = [
+      "ec2:DescribeInstances",
+      "iam:GetInstanceProfile",
+      "iam:GetUser",
+      "iam:GetRole",
+      "sts:GetCallerIdentity",
+    ]
+    resources = ["*"]
+  }
+
   statement {
     sid = "AllowLogging"
 
