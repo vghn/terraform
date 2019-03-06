@@ -27,6 +27,13 @@ provider "aws" {
 }
 
 provider "aws" {
+  profile = "hydra"
+  alias   = "hydra"
+  region  = "us-east-1"
+  version = "~> 1.58"
+}
+
+provider "aws" {
   profile = "orion"
   alias   = "orion"
   region  = "us-east-1"
@@ -72,6 +79,10 @@ provider "random" {
   version = "~> 1.3"
 }
 
+provider "template" {
+  version = "~> 2.1"
+}
+
 provider "tls" {
   version = "~> 1.2"
 }
@@ -89,6 +100,26 @@ module "ursa" {
     local.common_tags,
     map(
       "Account", "ursa"
+    )
+  )}"
+}
+
+module "hydra" {
+  source = "./hydra"
+
+  providers = {
+    aws = "aws.hydra"
+  }
+
+  email                      = "${data.aws_ssm_parameter.email.value}"
+  terraform_trusted_user_arn = "${module.ursa.terraform_user_arn}"
+  cf_email                   = "${data.aws_ssm_parameter.cf_email.value}"
+  cf_token                   = "${data.aws_ssm_parameter.cf_token.value}"
+
+  common_tags = "${merge(
+    local.common_tags,
+    map(
+      "Account", "hydra"
     )
   )}"
 }
