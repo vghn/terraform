@@ -32,8 +32,5 @@ resource "aws_iam_group_membership" "on_premise" {
   name  = "on_premise"
   group = "${aws_iam_group.on_premise.name}"
 
-  users = [
-    "${aws_iam_user.mini.name}",
-    "${aws_iam_user.rhea.name}",
-  ]
+  users = []
 }

@@ -1,3 +1,33 @@
+# Prometheus Assets S3 Bucket
+resource "aws_s3_bucket" "prometheus" {
+  bucket = "prometheus-vghn"
+  acl    = "private"
+
+  versioning {
+    enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "Remove old versions"
+    prefix  = ""
+    enabled = true
+
+    noncurrent_version_expiration {
+      days = 7
+    }
+  }
+
+  tags = "${var.common_tags}"
+}
+
 # Prometheus Instance Security Group
 module "prometheus_sg" {
   source  = "terraform-aws-modules/security-group/aws"
@@ -24,10 +54,17 @@ module "prometheus_sg" {
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      from_port   = 8200
+      to_port     = 8200
+      protocol    = "tcp"
+      description = "Vault Server"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
       from_port   = 10514
       to_port     = 10514
       protocol    = "tcp"
-      description = "Log server ports"
+      description = "Central Log Server"
       cidr_blocks = "0.0.0.0/0"
     },
   ]
@@ -85,6 +122,13 @@ data "null_data_source" "prometheus" {
 resource "cloudflare_record" "prometheus" {
   domain = "ghn.me"
   name   = "prometheus"
+  value  = "${data.null_data_source.prometheus.outputs["public_dns"]}"
+  type   = "CNAME"
+}
+
+resource "cloudflare_record" "logs" {
+  domain = "ghn.me"
+  name   = "logs"
   value  = "${data.null_data_source.prometheus.outputs["public_dns"]}"
   type   = "CNAME"
 }
@@ -160,4 +204,87 @@ resource "aws_volume_attachment" "prometheus_data_attachment" {
   instance_id  = "${aws_instance.prometheus.id}"
   volume_id    = "${aws_ebs_volume.prometheus_data.id}"
   skip_destroy = true
+}
+
+# Prometheus Data Lifecycle Manager (DLM) lifecycle policy for managing snapshots
+resource "aws_iam_role" "prometheus_dlm_lifecycle_role" {
+  name               = "prometheus-dlm-lifecycle-role"
+  description        = "Prometheus Data Lifecycle Manager (DLM) lifecycle role for managing snapshots"
+  assume_role_policy = "${data.aws_iam_policy_document.prometheus_dlm_lifecycle_trust.json}"
+}
+
+data "aws_iam_policy_document" "prometheus_dlm_lifecycle_trust" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["dlm.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "prometheus_dlm_lifecycle" {
+  name   = "prometheus-dlm-lifecycle-policy"
+  role   = "${aws_iam_role.prometheus_dlm_lifecycle_role.id}"
+  policy = "${data.aws_iam_policy_document.prometheus_dlm_lifecycle.json}"
+}
+
+data "aws_iam_policy_document" "prometheus_dlm_lifecycle" {
+  statement {
+    sid = "AllowSnapshots"
+
+    actions = [
+      "ec2:CreateSnapshot",
+      "ec2:DeleteSnapshot",
+      "ec2:DescribeVolumes",
+      "ec2:DescribeSnapshots",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "AllowSnasphotTagging"
+
+    actions = [
+      "ec2:CreateTags",
+    ]
+
+    resources = ["arn:aws:ec2:*::snapshot/*"]
+  }
+}
+
+resource "aws_dlm_lifecycle_policy" "prometheus" {
+  description        = "Prometheus DLM lifecycle policy"
+  execution_role_arn = "${aws_iam_role.prometheus_dlm_lifecycle_role.arn}"
+  state              = "ENABLED"
+
+  policy_details {
+    resource_types = ["VOLUME"]
+
+    schedule {
+      name = "2 weeks of daily snapshots"
+
+      create_rule {
+        interval      = 24
+        interval_unit = "HOURS"
+        times         = ["09:09"]
+      }
+
+      retain_rule {
+        count = 14
+      }
+
+      tags_to_add {
+        SnapshotCreator = "DLM"
+      }
+
+      copy_tags = true
+    }
+
+    target_tags {
+      Snapshot = "true"
+    }
+  }
 }

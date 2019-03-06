@@ -4,30 +4,19 @@ output "notifications_topic_arn" {
   value       = "${module.notifications.topic_arn}"
 }
 
+# Terraform
+output "terraform_role_arn" {
+  description = "Terraform role ARN"
+  value       = "${aws_iam_role.terraform.arn}"
+}
+
 # Prometheus instance
 output "prometheus_instance_public_ip" {
-  description = "The IP address of the Prometheus instance"
+  description = "Prometheus instance IP address"
   value       = "${aws_eip.prometheus.public_ip}"
 }
 
 output "prometheus_instance_public_dns" {
-  description = "The DNS address of the Prometheus instance"
+  description = "Prometheus instance DNS address"
   value       = "${data.null_data_source.prometheus.outputs["public_dns"]}"
-}
-
-# Prometheus role
-output "prometheus_role_arn" {
-  description = "The Prometheus role ARN"
-  value       = "${aws_iam_role.prometheus.arn}"
-}
-
-output "prometheus_role_id" {
-  description = "The Prometheus role id"
-  value       = "${aws_iam_role.prometheus.unique_id}"
-}
-
-# Terraform
-output "terraform_role_arn" {
-  description = "Terraform Role ARN"
-  value       = "${aws_iam_role.terraform.arn}"
 }

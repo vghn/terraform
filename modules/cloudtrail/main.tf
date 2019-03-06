@@ -60,10 +60,10 @@ resource "aws_cloudwatch_log_group" "cloudtrail" {
 resource "aws_iam_role" "cloudtrail" {
   name               = "cloudtrail"
   description        = "CloudTrail"
-  assume_role_policy = "${data.aws_iam_policy_document.cloudtrail_assume_role.json}"
+  assume_role_policy = "${data.aws_iam_policy_document.cloudtrail_trust.json}"
 }
 
-data "aws_iam_policy_document" "cloudtrail_assume_role" {
+data "aws_iam_policy_document" "cloudtrail_trust" {
   statement {
     actions = ["sts:AssumeRole"]
 
