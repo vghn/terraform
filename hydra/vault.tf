@@ -200,6 +200,7 @@ data "aws_iam_policy_document" "vault_role" {
   # Used by the AWS authentication backend
   statement {
     sid = "AllowIAMAuth"
+
     actions = [
       "ec2:DescribeInstances",
       "iam:GetInstanceProfile",
@@ -207,6 +208,7 @@ data "aws_iam_policy_document" "vault_role" {
       "iam:GetRole",
       "sts:GetCallerIdentity",
     ]
+
     resources = ["*"]
   }
 
@@ -334,9 +336,8 @@ sudo aws s3 sync --delete --sse aws:kms s3://${aws_s3_bucket.vault.id}/acme/vaul
 echo 'Generate/Renew LetsEncrypt certificates'
 export CF_Email="${var.cf_email}"
 export CF_Key="${var.cf_token}"
-sudo -E su -c '/root/.acme.sh/acme.sh --staging --issue --dns dns_cf -d vault.ghn.me || true'
-# sudo -E su -c '/root/.acme.sh/acme.sh --install-cert -d vault.ghn.me --cert-file /opt/vault/tls/vault.ghn.me.crt --key-file /opt/vault/tls/vault.ghn.me.key --fullchain-file /opt/vault/tls/vault.ghn.me.fullchain.crt'
-sudo -u vault aws s3 cp --recursive --sse aws:kms s3://vault-vghn/tls/ /opt/vault/tls
+sudo -E su -c '/root/.acme.sh/acme.sh --issue --dns dns_cf -d vault.ghn.me || true'
+sudo -E su -c '/root/.acme.sh/acme.sh --install-cert -d vault.ghn.me --cert-file /opt/vault/tls/vault.ghn.me.crt --key-file /opt/vault/tls/vault.ghn.me.key --fullchain-file /opt/vault/tls/vault.ghn.me.fullchain.crt'
 
 echo 'Upload LetsEncrypt certificates'
 sudo aws s3 sync --sse aws:kms /root/.acme.sh/ca s3://${aws_s3_bucket.vault.id}/acme/ca
