@@ -23,28 +23,28 @@ locals {
 provider "aws" {
   profile = "ursa"
   region  = "us-east-1"
-  version = "~> 1.58"
+  version = "~> 2.0"
 }
 
 provider "aws" {
   profile = "hydra"
   alias   = "hydra"
   region  = "us-east-1"
-  version = "~> 1.58"
+  version = "~> 2.0"
 }
 
 provider "aws" {
   profile = "orion"
   alias   = "orion"
   region  = "us-east-1"
-  version = "~> 1.58"
+  version = "~> 2.0"
 }
 
 provider "aws" {
   profile = "mec7"
   alias   = "mec7"
   region  = "us-west-2"
-  version = "~> 1.58"
+  version = "~> 2.0"
 }
 
 provider "cloudflare" {
@@ -72,23 +72,23 @@ provider "acme" {
 }
 
 provider "archive" {
-  version = "~> 1.1"
+  version = "~> 1.0"
 }
 
 provider "random" {
-  version = "~> 1.3"
+  version = "~> 2.0"
 }
 
 provider "template" {
-  version = "~> 2.1"
+  version = "~> 2.0"
 }
 
 provider "tls" {
-  version = "~> 1.2"
+  version = "~> 1.0"
 }
 
 provider "null" {
-  version = "~> 1.0"
+  version = "~> 2.0"
 }
 
 module "ursa" {
