@@ -1,6 +1,6 @@
 dist: xenial
 env:
-  TF_VERSION: '0.11.11'
+  TF_VERSION: '0.11.13'
 install:
   # Install Hashicorp's Terraform
   - |
