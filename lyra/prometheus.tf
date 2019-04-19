@@ -1,6 +1,6 @@
 # Prometheus Assets S3 Bucket
 resource "aws_s3_bucket" "prometheus" {
-  bucket = "prometheus-vghn"
+  bucket = "prometheus-vghn-lyra"
   acl    = "private"
 
   versioning {
@@ -53,20 +53,6 @@ module "prometheus_sg" {
       description = "Ping"
       cidr_blocks = "0.0.0.0/0"
     },
-    {
-      from_port   = 8200
-      to_port     = 8200
-      protocol    = "tcp"
-      description = "Vault Server"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      from_port   = 10514
-      to_port     = 10514
-      protocol    = "tcp"
-      description = "Central Log Server"
-      cidr_blocks = "0.0.0.0/0"
-    },
   ]
 
   ingress_with_self = [{
@@ -76,6 +62,76 @@ module "prometheus_sg" {
   egress_rules = ["all-all"]
 
   tags = "${var.common_tags}"
+}
+
+# Prometheus Role
+resource "aws_iam_role" "prometheus" {
+  name               = "prometheus"
+  description        = "Prometheus"
+  assume_role_policy = "${data.aws_iam_policy_document.prometheus_trust.json}"
+}
+
+data "aws_iam_policy_document" "prometheus_trust" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "prometheus" {
+  name   = "prometheus"
+  role   = "${aws_iam_role.prometheus.name}"
+  policy = "${data.aws_iam_policy_document.prometheus_role.json}"
+}
+
+data "aws_iam_policy_document" "prometheus_role" {
+  statement {
+    sid = "AllowScalingOperations"
+
+    actions = [
+      "ec2:Describe*",
+      "autoscaling:Describe*",
+      "autoscaling:EnterStandby",
+      "autoscaling:ExitStandby",
+      "elasticloadbalancing:ConfigureHealthCheck",
+      "elasticloadbalancing:DescribeLoadBalancers",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "AllowLogging"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogStreams",
+    ]
+
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+
+  statement {
+    sid       = "AllowS3ListAllBuckets"
+    actions   = ["s3:ListAllMyBuckets"]
+    resources = ["arn:aws:s3:::*"]
+  }
+
+  statement {
+    sid     = "AllowS3AccessToAssetsBucket"
+    actions = ["*"]
+
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.prometheus.id}",
+      "arn:aws:s3:::${aws_s3_bucket.prometheus.id}/*",
+    ]
+  }
 }
 
 # Prometheus Instance
@@ -188,7 +244,8 @@ DATA
 resource "aws_ebs_volume" "prometheus_data" {
   availability_zone = "us-east-1a"
   type              = "gp2"
-  size              = 10
+  snapshot_id       = "snap-0cf3afb787a62ca13"
+  encrypted         = true
 
   tags = "${merge(
     var.common_tags,

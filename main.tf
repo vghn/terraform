@@ -27,6 +27,13 @@ provider "aws" {
 }
 
 provider "aws" {
+  profile = "lyra"
+  alias   = "lyra"
+  region  = "us-east-1"
+  version = "~> 2.0"
+}
+
+provider "aws" {
   profile = "hydra"
   alias   = "hydra"
   region  = "us-east-1"
@@ -100,6 +107,26 @@ module "ursa" {
     local.common_tags,
     map(
       "Account", "ursa"
+    )
+  )}"
+}
+
+module "lyra" {
+  source = "./lyra"
+
+  providers = {
+    aws = "aws.lyra"
+  }
+
+  email                      = "${data.aws_ssm_parameter.email.value}"
+  terraform_trusted_user_arn = "${module.ursa.terraform_user_arn}"
+  cf_email                   = "${data.aws_ssm_parameter.cf_email.value}"
+  cf_token                   = "${data.aws_ssm_parameter.cf_token.value}"
+
+  common_tags = "${merge(
+    local.common_tags,
+    map(
+      "Account", "Lyra"
     )
   )}"
 }
