@@ -326,7 +326,7 @@ resource "aws_instance" "vault" {
   user_data = <<DATA
 #!/usr/bin/env bash
 set -euo pipefail
-IFS=\$'\n\t'
+IFS=$$'\n\t'
 
 # Send the log output from this script to user-data.log, syslog, and the console
 # From: https://alestic.com/2010/12/ec2-user-data-output/
@@ -384,7 +384,7 @@ sudo chown -R vault:vault /opt/vault/tls /opt/vault/config
 echo 'Start Vault Server'
 /opt/vault/bin/run-vault --skip-vault-config --tls-cert-file /opt/vault/tls/vault.ghn.me_fullchain.crt --tls-key-file /opt/vault/tls/vault.ghn.me.key
 
-echo "FINISHED @ \$(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
+echo "FINISHED @ $$(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
 DATA
 
 
