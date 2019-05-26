@@ -25,77 +25,77 @@ resource "aws_s3_bucket" "prometheus" {
     }
   }
 
-  tags = "${var.common_tags}"
+  tags = var.common_tags
 }
 
 # Prometheus Instance Security Group
 resource "aws_security_group" "prometheus" {
-  name = "Prometheus"
+  name        = "Prometheus"
   description = " Prometheus Security Group"
-  vpc_id = "${module.vpc.vpc_id}"
+  vpc_id      = module.vpc.vpc_id
 
-  tags = "${var.common_tags}"
+  tags = var.common_tags
 }
 
 resource "aws_security_group_rule" "prometheus_ssh" {
-  type = "ingress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-  security_group_id = "${aws_security_group.prometheus.id}"
-  cidr_blocks=["0.0.0.0/0"]
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  security_group_id = aws_security_group.prometheus.id
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "prometheus_http" {
-  type = "ingress"
-  from_port = 80
-  to_port = 80
-  protocol = "tcp"
-  security_group_id = "${aws_security_group.prometheus.id}"
-  cidr_blocks=["0.0.0.0/0"]
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  security_group_id = aws_security_group.prometheus.id
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "prometheus_https" {
-  type = "ingress"
-  from_port = 443
-  to_port = 443
-  protocol = "tcp"
-  security_group_id = "${aws_security_group.prometheus.id}"
-  cidr_blocks=["0.0.0.0/0"]
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  security_group_id = aws_security_group.prometheus.id
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "prometheus_ping" {
-  type = "ingress"
-  from_port = 8
-  to_port = 0
-  protocol = "icmp"
-  security_group_id = "${aws_security_group.prometheus.id}"
-  cidr_blocks=["0.0.0.0/0"]
+  type              = "ingress"
+  from_port         = 8
+  to_port           = 0
+  protocol          = "icmp"
+  security_group_id = aws_security_group.prometheus.id
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "prometheus_self" {
-  type = "ingress"
-  from_port = 0
-  to_port = 0
-  protocol = "-1"
-  security_group_id = "${aws_security_group.prometheus.id}"
-  source_security_group_id = "${aws_security_group.prometheus.id}"
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  security_group_id        = aws_security_group.prometheus.id
+  source_security_group_id = aws_security_group.prometheus.id
 }
 
 resource "aws_security_group_rule" "prometheus_egress" {
-  type = "egress"
-  from_port = 0
-  to_port = 0
-  protocol = "-1"
-  security_group_id = "${aws_security_group.prometheus.id}"
-  cidr_blocks=["0.0.0.0/0"]
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.prometheus.id
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 # Prometheus Role
 resource "aws_iam_role" "prometheus" {
   name               = "prometheus"
   description        = "Prometheus"
-  assume_role_policy = "${data.aws_iam_policy_document.prometheus_trust.json}"
+  assume_role_policy = data.aws_iam_policy_document.prometheus_trust.json
 }
 
 data "aws_iam_policy_document" "prometheus_trust" {
@@ -111,8 +111,8 @@ data "aws_iam_policy_document" "prometheus_trust" {
 
 resource "aws_iam_role_policy" "prometheus" {
   name   = "prometheus"
-  role   = "${aws_iam_role.prometheus.name}"
-  policy = "${data.aws_iam_policy_document.prometheus_role.json}"
+  role   = aws_iam_role.prometheus.name
+  policy = data.aws_iam_policy_document.prometheus_role.json
 }
 
 data "aws_iam_policy_document" "prometheus_role" {
@@ -164,7 +164,7 @@ data "aws_iam_policy_document" "prometheus_role" {
 # Prometheus Instance
 resource "aws_iam_instance_profile" "prometheus" {
   name = "prometheus"
-  role = "${aws_iam_role.prometheus.name}"
+  role = aws_iam_role.prometheus.name
 }
 
 data "aws_ami" "prometheus" {
@@ -185,15 +185,15 @@ data "aws_ami" "prometheus" {
 
 resource "aws_eip" "prometheus" {
   vpc        = true
-  instance   = "${aws_instance.prometheus.id}"
-  depends_on = ["module.vpc"]
+  instance   = aws_instance.prometheus.id
+  depends_on = [module.vpc]
 
-  tags = "${merge(
+  tags = merge(
     var.common_tags,
-    map(
-      "Name", "Prometheus"
-    )
-  )}"
+    {
+      "Name" = "Prometheus"
+    },
+  )
 }
 
 data "null_data_source" "prometheus" {
@@ -205,30 +205,30 @@ data "null_data_source" "prometheus" {
 resource "cloudflare_record" "prometheus" {
   domain = "ghn.me"
   name   = "prometheus"
-  value  = "${data.null_data_source.prometheus.outputs["public_dns"]}"
+  value  = data.null_data_source.prometheus.outputs["public_dns"]
   type   = "CNAME"
 }
 
 resource "cloudflare_record" "logs" {
   domain = "ghn.me"
   name   = "logs"
-  value  = "${data.null_data_source.prometheus.outputs["public_dns"]}"
+  value  = data.null_data_source.prometheus.outputs["public_dns"]
   type   = "CNAME"
 }
 
 resource "aws_instance" "prometheus" {
   instance_type               = "t2.micro"
-  ami                         = "${data.aws_ami.prometheus.id}"
-  subnet_id                   = "${element(module.vpc.public_subnets, 0)}"
-  vpc_security_group_ids      = ["${aws_security_group.prometheus.id}"]
-  iam_instance_profile        = "${aws_iam_instance_profile.prometheus.name}"
+  ami                         = data.aws_ami.prometheus.id
+  subnet_id                   = element(module.vpc.public_subnets, 0)
+  vpc_security_group_ids      = [aws_security_group.prometheus.id]
+  iam_instance_profile        = aws_iam_instance_profile.prometheus.name
   key_name                    = "vgh"
   associate_public_ip_address = true
 
   user_data = <<DATA
 #!/usr/bin/env bash
 set -euo pipefail
-IFS=$$'\n\t'
+IFS=\$'\n\t'
 
 # Send the log output from this script to user-data.log, syslog, and the console
 # From: https://alestic.com/2010/12/ec2-user-data-output/
@@ -252,20 +252,21 @@ sudo mount -a
 sudo service docker start
 
 echo 'Reinitialize cluster'
-sudo docker swarm init --force-new-cluster --advertise-addr $$(curl -s  http://169.254.169.254/latest/meta-data/local-ipv4)
+sudo docker swarm init --force-new-cluster --advertise-addr \$(curl -s  http://169.254.169.254/latest/meta-data/local-ipv4)
 
 echo 'Restart services'
 sudo service docker restart
 
-echo "FINISHED @ $$(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
+echo "FINISHED @ \$(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
 DATA
 
-  tags = "${merge(
+
+  tags = merge(
     var.common_tags,
-    map(
-      "Name", "Prometheus"
-    )
-  )}"
+    {
+      "Name" = "Prometheus"
+    },
+  )
 }
 
 resource "aws_ebs_volume" "prometheus_data" {
@@ -274,19 +275,19 @@ resource "aws_ebs_volume" "prometheus_data" {
   snapshot_id = "snap-0cf3afb787a62ca13"
   encrypted = true
 
-  tags = "${merge(
+  tags = merge(
     var.common_tags,
-    map(
-      "Name", "Prometheus Data",
-      "Snapshot", "true",
-    )
-  )}"
+    {
+      "Name" = "Prometheus Data"
+      "Snapshot" = "true"
+    },
+  )
 }
 
 resource "aws_volume_attachment" "prometheus_data_attachment" {
   device_name = "/dev/sdg"
-  instance_id = "${aws_instance.prometheus.id}"
-  volume_id = "${aws_ebs_volume.prometheus_data.id}"
+  instance_id = aws_instance.prometheus.id
+  volume_id = aws_ebs_volume.prometheus_data.id
   skip_destroy = true
 }
 
@@ -294,7 +295,7 @@ resource "aws_volume_attachment" "prometheus_data_attachment" {
 resource "aws_iam_role" "prometheus_dlm_lifecycle_role" {
   name = "prometheus-dlm-lifecycle-role"
   description = "Prometheus Data Lifecycle Manager (DLM) lifecycle role for managing snapshots"
-  assume_role_policy = "${data.aws_iam_policy_document.prometheus_dlm_lifecycle_trust.json}"
+  assume_role_policy = data.aws_iam_policy_document.prometheus_dlm_lifecycle_trust.json
 }
 
 data "aws_iam_policy_document" "prometheus_dlm_lifecycle_trust" {
@@ -310,8 +311,8 @@ data "aws_iam_policy_document" "prometheus_dlm_lifecycle_trust" {
 
 resource "aws_iam_role_policy" "prometheus_dlm_lifecycle" {
   name = "prometheus-dlm-lifecycle-policy"
-  role = "${aws_iam_role.prometheus_dlm_lifecycle_role.id}"
-  policy = "${data.aws_iam_policy_document.prometheus_dlm_lifecycle.json}"
+  role = aws_iam_role.prometheus_dlm_lifecycle_role.id
+  policy = data.aws_iam_policy_document.prometheus_dlm_lifecycle.json
 }
 
 data "aws_iam_policy_document" "prometheus_dlm_lifecycle" {
@@ -341,7 +342,7 @@ data "aws_iam_policy_document" "prometheus_dlm_lifecycle" {
 
 resource "aws_dlm_lifecycle_policy" "prometheus" {
   description = "Prometheus DLM lifecycle policy"
-  execution_role_arn = "${aws_iam_role.prometheus_dlm_lifecycle_role.arn}"
+  execution_role_arn = aws_iam_role.prometheus_dlm_lifecycle_role.arn
   state = "ENABLED"
 
   policy_details {
@@ -372,3 +373,4 @@ resource "aws_dlm_lifecycle_policy" "prometheus" {
     }
   }
 }
+

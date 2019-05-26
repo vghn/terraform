@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform" {
-  bucket = "${var.bucket}"
+  bucket = var.bucket
   acl    = "private"
 
   versioning {
@@ -23,19 +23,19 @@ resource "aws_s3_bucket" "terraform" {
     }
   }
 
-  tags {
-    Environment = "${var.env}"
+  tags = {
+    Environment = var.env
   }
 }
 
 resource "aws_dynamodb_table" "terraform" {
-  name           = "${var.table}"
+  name           = var.table
   read_capacity  = 5
   write_capacity = 5
   hash_key       = "LockID"
 
-  server_side_encryption = {
-    "enabled" = true
+  server_side_encryption {
+    enabled = true
   }
 
   attribute {
@@ -43,3 +43,4 @@ resource "aws_dynamodb_table" "terraform" {
     type = "S"
   }
 }
+

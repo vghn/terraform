@@ -4,14 +4,14 @@ resource "aws_iam_group" "on_premise" {
 }
 
 resource "aws_iam_group_policy_attachment" "s3_full_access" {
-  group      = "${aws_iam_group.on_premise.name}"
+  group      = aws_iam_group.on_premise.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 resource "aws_iam_group_policy" "on_premise" {
-  group  = "${aws_iam_group.on_premise.id}"
+  group  = aws_iam_group.on_premise.id
   name   = "on_premise"
-  policy = "${data.aws_iam_policy_document.on_premise_group.json}"
+  policy = data.aws_iam_policy_document.on_premise_group.json
 }
 
 data "aws_iam_policy_document" "on_premise_group" {
@@ -30,7 +30,8 @@ data "aws_iam_policy_document" "on_premise_group" {
 
 resource "aws_iam_group_membership" "on_premise" {
   name  = "on_premise"
-  group = "${aws_iam_group.on_premise.name}"
+  group = aws_iam_group.on_premise.name
 
   users = []
 }
+

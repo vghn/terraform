@@ -1,6 +1,4 @@
 terraform {
-  required_version = "~> 0.12"
-
   backend "s3" {
     bucket         = "vgtf"
     key            = "terraform.tfstate"
@@ -56,15 +54,15 @@ provider "aws" {
 
 provider "cloudflare" {
   version = "~> 1.0"
-  email   = "${data.aws_ssm_parameter.cf_email.value}"
-  token   = "${data.aws_ssm_parameter.cf_token.value}"
+  email   = data.aws_ssm_parameter.cf_email.value
+  token   = data.aws_ssm_parameter.cf_token.value
 }
 
 provider "cloudflare" {
   alias   = "mec7"
   version = "~> 1.0"
-  email   = "${data.aws_ssm_parameter.cosmin_cf_email.value}"
-  token   = "${data.aws_ssm_parameter.cosmin_cf_token.value}"
+  email   = data.aws_ssm_parameter.cosmin_cf_email.value
+  token   = data.aws_ssm_parameter.cosmin_cf_token.value
 }
 
 provider "acme" {
@@ -101,89 +99,90 @@ provider "null" {
 module "ursa" {
   source = "./ursa"
 
-  email = "${data.aws_ssm_parameter.email.value}"
+  email = data.aws_ssm_parameter.email.value
 
-  common_tags = "${merge(
+  common_tags = merge(
     local.common_tags,
-    map(
-      "Account", "ursa"
-    )
-  )}"
+    {
+      "Account" = "ursa"
+    },
+  )
 }
 
 module "lyra" {
   source = "./lyra"
 
   providers = {
-    aws = "aws.lyra"
+    aws = aws.lyra
   }
 
-  email                      = "${data.aws_ssm_parameter.email.value}"
-  terraform_trusted_user_arn = "${module.ursa.terraform_user_arn}"
-  cf_email                   = "${data.aws_ssm_parameter.cf_email.value}"
-  cf_token                   = "${data.aws_ssm_parameter.cf_token.value}"
+  email                      = data.aws_ssm_parameter.email.value
+  terraform_trusted_user_arn = module.ursa.terraform_user_arn
+  cf_email                   = data.aws_ssm_parameter.cf_email.value
+  cf_token                   = data.aws_ssm_parameter.cf_token.value
 
-  common_tags = "${merge(
+  common_tags = merge(
     local.common_tags,
-    map(
-      "Account", "Lyra"
-    )
-  )}"
+    {
+      "Account" = "Lyra"
+    },
+  )
 }
 
 module "hydra" {
   source = "./hydra"
 
   providers = {
-    aws = "aws.hydra"
+    aws = aws.hydra
   }
 
-  email                      = "${data.aws_ssm_parameter.email.value}"
-  terraform_trusted_user_arn = "${module.ursa.terraform_user_arn}"
-  cf_email                   = "${data.aws_ssm_parameter.cf_email.value}"
-  cf_token                   = "${data.aws_ssm_parameter.cf_token.value}"
+  email                      = data.aws_ssm_parameter.email.value
+  terraform_trusted_user_arn = module.ursa.terraform_user_arn
+  cf_email                   = data.aws_ssm_parameter.cf_email.value
+  cf_token                   = data.aws_ssm_parameter.cf_token.value
 
-  common_tags = "${merge(
+  common_tags = merge(
     local.common_tags,
-    map(
-      "Account", "hydra"
-    )
-  )}"
+    {
+      "Account" = "hydra"
+    },
+  )
 }
 
 module "orion" {
   source = "./orion"
 
   providers = {
-    aws = "aws.orion"
+    aws = aws.orion
   }
 
-  email                      = "${data.aws_ssm_parameter.email.value}"
-  terraform_trusted_user_arn = "${module.ursa.terraform_user_arn}"
+  email                      = data.aws_ssm_parameter.email.value
+  terraform_trusted_user_arn = module.ursa.terraform_user_arn
 
-  common_tags = "${merge(
+  common_tags = merge(
     local.common_tags,
-    map(
-      "Account", "ursa"
-    )
-  )}"
+    {
+      "Account" = "ursa"
+    },
+  )
 }
 
 module "mec7" {
   source = "./mec7"
 
   providers = {
-    aws        = "aws.mec7"
-    cloudflare = "cloudflare.mec7"
+    aws        = aws.mec7
+    cloudflare = cloudflare.mec7
   }
 
-  email                      = "${data.aws_ssm_parameter.email.value}"
-  terraform_trusted_user_arn = "${module.ursa.terraform_user_arn}"
+  email                      = data.aws_ssm_parameter.email.value
+  terraform_trusted_user_arn = module.ursa.terraform_user_arn
 
-  common_tags = "${merge(
+  common_tags = merge(
     local.common_tags,
-    map(
-      "Account", "mec7"
-    )
-  )}"
+    {
+      "Account" = "mec7"
+    },
+  )
 }
+

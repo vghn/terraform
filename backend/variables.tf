@@ -9,3 +9,4 @@ variable "bucket" {
 variable "table" {
   description = "DynamoDB table name for the terraform state lock"
 }
+

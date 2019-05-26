@@ -11,12 +11,12 @@ resource "aws_s3_bucket" "vault" {
     }
   }
 
-  tags = "${var.common_tags}"
+  tags = var.common_tags
 }
 
 resource "aws_s3_bucket_policy" "vault" {
-  bucket = "${aws_s3_bucket.vault.id}"
-  policy = "${data.aws_iam_policy_document.vault_s3.json}"
+  bucket = aws_s3_bucket.vault.id
+  policy = data.aws_iam_policy_document.vault_s3.json
 }
 
 data "aws_iam_policy_document" "vault_s3" {
@@ -94,7 +94,7 @@ data "aws_iam_policy_document" "vault_s3" {
       variable = "aws:userId"
 
       values = [
-        "${data.aws_caller_identity.current.account_id}",
+        data.aws_caller_identity.current.account_id,
         "${data.aws_iam_role.vlad.unique_id}:*",
         "${aws_iam_role.terraform.unique_id}:*",
         "${aws_iam_role.vault.unique_id}:*",
@@ -125,60 +125,60 @@ resource "aws_dynamodb_table" "vault" {
     type = "S"
   }
 
-  tags = "${merge(
+  tags = merge(
     var.common_tags,
-    map(
-      "Name", "Vault"
-    )
-  )}"
+    {
+      "Name" = "Vault"
+    },
+  )
 }
 
 # Vault Instance Security Group
 resource "aws_security_group" "vault" {
-  name = "Vault"
+  name        = "Vault"
   description = " Vault Security Group"
-  vpc_id = "${module.vpc.vpc_id}"
+  vpc_id      = module.vpc.vpc_id
 
-  tags = "${var.common_tags}"
+  tags = var.common_tags
 }
 
 resource "aws_security_group_rule" "vault_server" {
-  type = "ingress"
-  from_port = 8200
-  to_port = 8200
-  protocol = "tcp"
-  security_group_id = "${aws_security_group.vault.id}"
-  cidr_blocks=["0.0.0.0/0"]
+  type              = "ingress"
+  from_port         = 8200
+  to_port           = 8200
+  protocol          = "tcp"
+  security_group_id = aws_security_group.vault.id
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "vault_self" {
-  type = "ingress"
-  from_port = 0
-  to_port = 0
-  protocol = "-1"
-  security_group_id = "${aws_security_group.vault.id}"
-  source_security_group_id = "${aws_security_group.vault.id}"
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  security_group_id        = aws_security_group.vault.id
+  source_security_group_id = aws_security_group.vault.id
 }
 
 resource "aws_security_group_rule" "vault_egress" {
-  type = "egress"
-  from_port = 0
-  to_port = 0
-  protocol = "-1"
-  security_group_id = "${aws_security_group.vault.id}"
-  cidr_blocks=["0.0.0.0/0"]
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.vault.id
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 # Vault Instance Role
 resource "aws_iam_instance_profile" "vault" {
   name = "vault"
-  role = "${aws_iam_role.vault.name}"
+  role = aws_iam_role.vault.name
 }
 
 resource "aws_iam_role" "vault" {
   name               = "vault"
   description        = "Vault"
-  assume_role_policy = "${data.aws_iam_policy_document.vault_trust.json}"
+  assume_role_policy = data.aws_iam_policy_document.vault_trust.json
 }
 
 data "aws_iam_policy_document" "vault_trust" {
@@ -194,8 +194,8 @@ data "aws_iam_policy_document" "vault_trust" {
 
 resource "aws_iam_role_policy" "vault" {
   name   = "vault"
-  role   = "${aws_iam_role.vault.name}"
-  policy = "${data.aws_iam_policy_document.vault_role.json}"
+  role   = aws_iam_role.vault.name
+  policy = data.aws_iam_policy_document.vault_role.json
 }
 
 data "aws_iam_policy_document" "vault_role" {
@@ -265,7 +265,7 @@ data "aws_iam_policy_document" "vault_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "vault_dynamodb" {
-  role       = "${aws_iam_role.vault.name}"
+  role       = aws_iam_role.vault.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
@@ -289,15 +289,15 @@ data "aws_ami" "vault" {
 # DNS
 resource "aws_eip" "vault" {
   vpc        = true
-  instance   = "${aws_instance.vault.id}"
-  depends_on = ["module.vpc"]
+  instance   = aws_instance.vault.id
+  depends_on = [module.vpc]
 
-  tags = "${merge(
+  tags = merge(
     var.common_tags,
-    map(
-      "Name", "Vault"
-    )
-  )}"
+    {
+      "Name" = "Vault"
+    },
+  )
 }
 
 data "null_data_source" "vault" {
@@ -309,24 +309,24 @@ data "null_data_source" "vault" {
 resource "cloudflare_record" "vault" {
   domain = "ghn.me"
   name   = "vault"
-  value  = "${data.null_data_source.vault.outputs["public_dns"]}"
+  value  = data.null_data_source.vault.outputs["public_dns"]
   type   = "CNAME"
 }
 
 # Vault Instance
 resource "aws_instance" "vault" {
   instance_type               = "t2.micro"
-  ami                         = "${data.aws_ami.vault.id}"
-  subnet_id                   = "${element(module.vpc.public_subnets, 0)}"
-  vpc_security_group_ids      = ["${aws_security_group.vault.id}"]
-  iam_instance_profile        = "${aws_iam_instance_profile.vault.name}"
+  ami                         = data.aws_ami.vault.id
+  subnet_id                   = element(module.vpc.public_subnets, 0)
+  vpc_security_group_ids      = [aws_security_group.vault.id]
+  iam_instance_profile        = aws_iam_instance_profile.vault.name
   key_name                    = "vgh"
   associate_public_ip_address = true
 
   user_data = <<DATA
 #!/usr/bin/env bash
 set -euo pipefail
-IFS=$$'\n\t'
+IFS=\$'\n\t'
 
 # Send the log output from this script to user-data.log, syslog, and the console
 # From: https://alestic.com/2010/12/ec2-user-data-output/
@@ -384,13 +384,15 @@ sudo chown -R vault:vault /opt/vault/tls /opt/vault/config
 echo 'Start Vault Server'
 /opt/vault/bin/run-vault --skip-vault-config --tls-cert-file /opt/vault/tls/vault.ghn.me_fullchain.crt --tls-key-file /opt/vault/tls/vault.ghn.me.key
 
-echo "FINISHED @ $$(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
+echo "FINISHED @ \$(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
 DATA
 
-  tags = "${merge(
+
+  tags = merge(
     var.common_tags,
-    map(
-      "Name", "Vault"
-    )
-  )}"
+    {
+      "Name" = "Vault"
+    },
+  )
 }
+

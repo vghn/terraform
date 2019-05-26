@@ -27,4 +27,6 @@ Notification topic arns:
   - MEC7: ${module.mec7.notifications_topic_arn}
 
 EOF
+
 }
+

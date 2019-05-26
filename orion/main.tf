@@ -1,6 +1,8 @@
-data "aws_region" "current" {}
+data "aws_region" "current" {
+}
 
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+}
 
 data "aws_iam_role" "vlad" {
   name = "vlad"
@@ -8,30 +10,30 @@ data "aws_iam_role" "vlad" {
 
 module "notifications" {
   source = "../modules/notifications"
-  email  = "${var.email}"
+  email  = var.email
 
-  common_tags = "${var.common_tags}"
+  common_tags = var.common_tags
 }
 
 module "billing" {
   source                  = "../modules/billing"
-  notifications_topic_arn = "${module.notifications.topic_arn}"
+  notifications_topic_arn = module.notifications.topic_arn
   thresholds              = ["1", "2", "3", "4", "5"]
   account                 = "Orion"
 
-  common_tags = "${var.common_tags}"
+  common_tags = var.common_tags
 }
 
 module "cloudwatch_event_watcher" {
   source = "../modules/cloudwatch_event_watcher"
 
-  common_tags = "${var.common_tags}"
+  common_tags = var.common_tags
 }
 
 module "cloudtrail" {
   source = "../modules/cloudtrail"
 
-  common_tags = "${var.common_tags}"
+  common_tags = var.common_tags
 }
 
 module "vpc" {
@@ -61,5 +63,6 @@ module "vpc" {
     "10.0.6.0/24",
   ]
 
-  tags = "${var.common_tags}"
+  tags = var.common_tags
 }
+

@@ -16,6 +16,7 @@ variable "cf_token" {
 
 variable "common_tags" {
   description = "Tags that should be applied to all resources"
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
+

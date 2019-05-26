@@ -2,7 +2,7 @@
 resource "aws_iam_role" "terraform" {
   name               = "terraform"
   description        = "Terraform"
-  assume_role_policy = "${data.aws_iam_policy_document.terraform_trust.json}"
+  assume_role_policy = data.aws_iam_policy_document.terraform_trust.json
 }
 
 data "aws_iam_policy_document" "terraform_trust" {
@@ -11,13 +11,13 @@ data "aws_iam_policy_document" "terraform_trust" {
 
     principals {
       type        = "AWS"
-      identifiers = ["${aws_iam_user.terraform.arn}"]
+      identifiers = [aws_iam_user.terraform.arn]
     }
   }
 }
 
 resource "aws_iam_role_policy_attachment" "terraform_administrator_access" {
-  role       = "${aws_iam_role.terraform.name}"
+  role       = aws_iam_role.terraform.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "terraform_administrator_access" {
 resource "aws_iam_role" "vbot" {
   name               = "vbot"
   description        = "VBot"
-  assume_role_policy = "${data.aws_iam_policy_document.vbot_trust.json}"
+  assume_role_policy = data.aws_iam_policy_document.vbot_trust.json
 }
 
 data "aws_iam_policy_document" "vbot_trust" {
@@ -34,12 +34,13 @@ data "aws_iam_policy_document" "vbot_trust" {
 
     principals {
       type        = "AWS"
-      identifiers = ["${aws_iam_user.vbot.arn}"]
+      identifiers = [aws_iam_user.vbot.arn]
     }
   }
 }
 
 resource "aws_iam_role_policy_attachment" "vbot" {
-  role       = "${aws_iam_role.vbot.name}"
+  role       = aws_iam_role.vbot.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+

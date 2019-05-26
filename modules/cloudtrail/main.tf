@@ -1,12 +1,12 @@
 resource "aws_cloudtrail" "cloudtrail" {
   name                          = "CloudTrail"
-  s3_bucket_name                = "${aws_s3_bucket.cloudtrail.id}"
+  s3_bucket_name                = aws_s3_bucket.cloudtrail.id
   include_global_service_events = true
   is_multi_region_trail         = true
-  cloud_watch_logs_group_arn    = "${aws_cloudwatch_log_group.cloudtrail.arn}"
-  cloud_watch_logs_role_arn     = "${aws_iam_role.cloudtrail.arn}"
+  cloud_watch_logs_group_arn    = aws_cloudwatch_log_group.cloudtrail.arn
+  cloud_watch_logs_role_arn     = aws_iam_role.cloudtrail.arn
 
-  tags = "${var.common_tags}"
+  tags = var.common_tags
 }
 
 resource "random_id" "cloudtrail" {
@@ -15,9 +15,9 @@ resource "random_id" "cloudtrail" {
 
 resource "aws_s3_bucket" "cloudtrail" {
   bucket = "cloudtrail-${random_id.cloudtrail.hex}"
-  policy = "${data.aws_iam_policy_document.cloudtrail_bucket.json}"
+  policy = data.aws_iam_policy_document.cloudtrail_bucket.json
 
-  tags = "${var.common_tags}"
+  tags = var.common_tags
 }
 
 data "aws_iam_policy_document" "cloudtrail_bucket" {
@@ -52,15 +52,15 @@ data "aws_iam_policy_document" "cloudtrail_bucket" {
 
 resource "aws_cloudwatch_log_group" "cloudtrail" {
   name              = "CloudTrail"
-  retention_in_days = "${var.log_retention}"
+  retention_in_days = var.log_retention
 
-  tags = "${var.common_tags}"
+  tags = var.common_tags
 }
 
 resource "aws_iam_role" "cloudtrail" {
   name               = "cloudtrail"
   description        = "CloudTrail"
-  assume_role_policy = "${data.aws_iam_policy_document.cloudtrail_trust.json}"
+  assume_role_policy = data.aws_iam_policy_document.cloudtrail_trust.json
 }
 
 data "aws_iam_policy_document" "cloudtrail_trust" {
@@ -75,21 +75,22 @@ data "aws_iam_policy_document" "cloudtrail_trust" {
 }
 
 resource "aws_iam_role_policy" "cloudtrail" {
-  role   = "${aws_iam_role.cloudtrail.id}"
+  role   = aws_iam_role.cloudtrail.id
   name   = "cloudtrail"
-  policy = "${data.aws_iam_policy_document.cloudtrail_role.json}"
+  policy = data.aws_iam_policy_document.cloudtrail_role.json
 }
 
 data "aws_iam_policy_document" "cloudtrail_role" {
   statement {
     sid       = "AWSCloudTrailCreateLogStream"
     actions   = ["logs:CreateLogStream"]
-    resources = ["${aws_cloudwatch_log_group.cloudtrail.arn}"]
+    resources = [aws_cloudwatch_log_group.cloudtrail.arn]
   }
 
   statement {
     sid       = "AWSCloudTrailPutLogEvents"
     actions   = ["logs:PutLogEvents"]
-    resources = ["${aws_cloudwatch_log_group.cloudtrail.arn}"]
+    resources = [aws_cloudwatch_log_group.cloudtrail.arn]
   }
 }
+

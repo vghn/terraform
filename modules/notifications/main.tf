@@ -1,10 +1,10 @@
 resource "aws_cloudformation_stack" "notifications" {
   name = "notifications"
 
-  tags = "${var.common_tags}"
+  tags = var.common_tags
 
   parameters = {
-    NotificationEmail = "${var.email}"
+    NotificationEmail = var.email
   }
 
   template_body = <<STACK
@@ -32,4 +32,6 @@ Outputs:
     Export:
       Name: NotificationsARN
 STACK
+
 }
+
