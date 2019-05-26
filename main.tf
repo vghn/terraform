@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 0.11"
+  required_version = "~> 0.12"
 
   backend "s3" {
     bucket         = "vgtf"
@@ -91,7 +91,7 @@ provider "template" {
 }
 
 provider "tls" {
-  version = "~> 1.0"
+  version = "~> 2.0"
 }
 
 provider "null" {

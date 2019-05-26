@@ -29,39 +29,66 @@ resource "aws_s3_bucket" "prometheus" {
 }
 
 # Prometheus Instance Security Group
-module "prometheus_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "2.1.0"
-
-  name        = "Prometheus"
-  description = "Security group for the Prometheus"
-  vpc_id      = "${module.vpc.vpc_id}"
-
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-
-  ingress_rules = [
-    "ssh-tcp",
-    "https-443-tcp",
-    "http-80-tcp",
-  ]
-
-  ingress_with_cidr_blocks = [
-    {
-      from_port   = 8
-      to_port     = 0
-      protocol    = "icmp"
-      description = "Ping"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-
-  ingress_with_self = [{
-    rule = "all-all"
-  }]
-
-  egress_rules = ["all-all"]
+resource "aws_security_group" "prometheus" {
+  name = "Prometheus"
+  description = " Prometheus Security Group"
+  vpc_id = "${module.vpc.vpc_id}"
 
   tags = "${var.common_tags}"
+}
+
+resource "aws_security_group_rule" "prometheus_ssh" {
+  type = "ingress"
+  from_port = 22
+  to_port = 22
+  protocol = "tcp"
+  security_group_id = "${aws_security_group.prometheus.id}"
+  cidr_blocks=["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "prometheus_http" {
+  type = "ingress"
+  from_port = 80
+  to_port = 80
+  protocol = "tcp"
+  security_group_id = "${aws_security_group.prometheus.id}"
+  cidr_blocks=["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "prometheus_https" {
+  type = "ingress"
+  from_port = 443
+  to_port = 443
+  protocol = "tcp"
+  security_group_id = "${aws_security_group.prometheus.id}"
+  cidr_blocks=["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "prometheus_ping" {
+  type = "ingress"
+  from_port = 8
+  to_port = 0
+  protocol = "icmp"
+  security_group_id = "${aws_security_group.prometheus.id}"
+  cidr_blocks=["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "prometheus_self" {
+  type = "ingress"
+  from_port = 0
+  to_port = 0
+  protocol = "-1"
+  security_group_id = "${aws_security_group.prometheus.id}"
+  source_security_group_id = "${aws_security_group.prometheus.id}"
+}
+
+resource "aws_security_group_rule" "prometheus_egress" {
+  type = "egress"
+  from_port = 0
+  to_port = 0
+  protocol = "-1"
+  security_group_id = "${aws_security_group.prometheus.id}"
+  cidr_blocks=["0.0.0.0/0"]
 }
 
 # Prometheus Role
@@ -193,7 +220,7 @@ resource "aws_instance" "prometheus" {
   instance_type               = "t2.micro"
   ami                         = "${data.aws_ami.prometheus.id}"
   subnet_id                   = "${element(module.vpc.public_subnets, 0)}"
-  vpc_security_group_ids      = ["${module.prometheus_sg.this_security_group_id}"]
+  vpc_security_group_ids      = ["${aws_security_group.prometheus.id}"]
   iam_instance_profile        = "${aws_iam_instance_profile.prometheus.name}"
   key_name                    = "vgh"
   associate_public_ip_address = true
@@ -243,9 +270,9 @@ DATA
 
 resource "aws_ebs_volume" "prometheus_data" {
   availability_zone = "us-east-1a"
-  type              = "gp2"
-  snapshot_id       = "snap-0cf3afb787a62ca13"
-  encrypted         = true
+  type = "gp2"
+  snapshot_id = "snap-0cf3afb787a62ca13"
+  encrypted = true
 
   tags = "${merge(
     var.common_tags,
@@ -257,16 +284,16 @@ resource "aws_ebs_volume" "prometheus_data" {
 }
 
 resource "aws_volume_attachment" "prometheus_data_attachment" {
-  device_name  = "/dev/sdg"
-  instance_id  = "${aws_instance.prometheus.id}"
-  volume_id    = "${aws_ebs_volume.prometheus_data.id}"
+  device_name = "/dev/sdg"
+  instance_id = "${aws_instance.prometheus.id}"
+  volume_id = "${aws_ebs_volume.prometheus_data.id}"
   skip_destroy = true
 }
 
 # Prometheus Data Lifecycle Manager (DLM) lifecycle policy for managing snapshots
 resource "aws_iam_role" "prometheus_dlm_lifecycle_role" {
-  name               = "prometheus-dlm-lifecycle-role"
-  description        = "Prometheus Data Lifecycle Manager (DLM) lifecycle role for managing snapshots"
+  name = "prometheus-dlm-lifecycle-role"
+  description = "Prometheus Data Lifecycle Manager (DLM) lifecycle role for managing snapshots"
   assume_role_policy = "${data.aws_iam_policy_document.prometheus_dlm_lifecycle_trust.json}"
 }
 
@@ -275,15 +302,15 @@ data "aws_iam_policy_document" "prometheus_dlm_lifecycle_trust" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      type        = "Service"
+      type = "Service"
       identifiers = ["dlm.amazonaws.com"]
     }
   }
 }
 
 resource "aws_iam_role_policy" "prometheus_dlm_lifecycle" {
-  name   = "prometheus-dlm-lifecycle-policy"
-  role   = "${aws_iam_role.prometheus_dlm_lifecycle_role.id}"
+  name = "prometheus-dlm-lifecycle-policy"
+  role = "${aws_iam_role.prometheus_dlm_lifecycle_role.id}"
   policy = "${data.aws_iam_policy_document.prometheus_dlm_lifecycle.json}"
 }
 
@@ -313,9 +340,9 @@ data "aws_iam_policy_document" "prometheus_dlm_lifecycle" {
 }
 
 resource "aws_dlm_lifecycle_policy" "prometheus" {
-  description        = "Prometheus DLM lifecycle policy"
+  description = "Prometheus DLM lifecycle policy"
   execution_role_arn = "${aws_iam_role.prometheus_dlm_lifecycle_role.arn}"
-  state              = "ENABLED"
+  state = "ENABLED"
 
   policy_details {
     resource_types = ["VOLUME"]
@@ -324,23 +351,23 @@ resource "aws_dlm_lifecycle_policy" "prometheus" {
       name = "2 weeks of daily snapshots"
 
       create_rule {
-        interval      = 24
+        interval = 24
         interval_unit = "HOURS"
-        times         = ["09:09"]
+        times = ["09:09"]
       }
 
       retain_rule {
         count = 14
       }
 
-      tags_to_add {
+      tags_to_add = {
         SnapshotCreator = "DLM"
       }
 
       copy_tags = true
     }
 
-    target_tags {
+    target_tags = {
       Snapshot = "true"
     }
   }

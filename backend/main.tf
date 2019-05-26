@@ -3,7 +3,7 @@
 
 # The default AWS provider configuration
 provider "aws" {
-  version = "~> 1.28"
+  version = "~> 2.0"
   region  = "us-east-1"
 }
 

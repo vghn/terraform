@@ -111,8 +111,8 @@ resource "aws_dynamodb_table" "vault" {
   hash_key       = "Path"
   range_key      = "Key"
 
-  server_side_encryption = {
-    "enabled" = true
+  server_side_encryption {
+    enabled = true
   }
 
   attribute {
@@ -134,31 +134,39 @@ resource "aws_dynamodb_table" "vault" {
 }
 
 # Vault Instance Security Group
-module "vault_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "2.1.0"
-
-  name        = "Vault"
-  description = "Security group for the Vault"
-  vpc_id      = "${module.vpc.vpc_id}"
-
-  ingress_with_cidr_blocks = [
-    {
-      from_port   = 8200
-      to_port     = 8200
-      protocol    = "tcp"
-      description = "Vault Server"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-
-  ingress_with_self = [{
-    rule = "all-all"
-  }]
-
-  egress_rules = ["all-all"]
+resource "aws_security_group" "vault" {
+  name = "Vault"
+  description = " Vault Security Group"
+  vpc_id = "${module.vpc.vpc_id}"
 
   tags = "${var.common_tags}"
+}
+
+resource "aws_security_group_rule" "vault_server" {
+  type = "ingress"
+  from_port = 8200
+  to_port = 8200
+  protocol = "tcp"
+  security_group_id = "${aws_security_group.vault.id}"
+  cidr_blocks=["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "vault_self" {
+  type = "ingress"
+  from_port = 0
+  to_port = 0
+  protocol = "-1"
+  security_group_id = "${aws_security_group.vault.id}"
+  source_security_group_id = "${aws_security_group.vault.id}"
+}
+
+resource "aws_security_group_rule" "vault_egress" {
+  type = "egress"
+  from_port = 0
+  to_port = 0
+  protocol = "-1"
+  security_group_id = "${aws_security_group.vault.id}"
+  cidr_blocks=["0.0.0.0/0"]
 }
 
 # Vault Instance Role
@@ -310,7 +318,7 @@ resource "aws_instance" "vault" {
   instance_type               = "t2.micro"
   ami                         = "${data.aws_ami.vault.id}"
   subnet_id                   = "${element(module.vpc.public_subnets, 0)}"
-  vpc_security_group_ids      = ["${module.vault_sg.this_security_group_id}"]
+  vpc_security_group_ids      = ["${aws_security_group.vault.id}"]
   iam_instance_profile        = "${aws_iam_instance_profile.vault.name}"
   key_name                    = "vgh"
   associate_public_ip_address = true

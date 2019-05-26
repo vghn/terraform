@@ -11,7 +11,7 @@ resource "aws_cloudwatch_metric_alarm" "billing" {
   statistic           = "Maximum"
   threshold           = "${var.thresholds[count.index]}"
 
-  dimensions {
+  dimensions = {
     Currency = "USD"
   }
 }

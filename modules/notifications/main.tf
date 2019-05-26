@@ -3,7 +3,7 @@ resource "aws_cloudformation_stack" "notifications" {
 
   tags = "${var.common_tags}"
 
-  parameters {
+  parameters = {
     NotificationEmail = "${var.email}"
   }
 
