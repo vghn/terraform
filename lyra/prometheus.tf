@@ -228,7 +228,7 @@ resource "aws_instance" "prometheus" {
   user_data = <<DATA
 #!/usr/bin/env bash
 set -euo pipefail
-IFS=$$'\n\t'
+IFS=$'\n\t'
 
 # Send the log output from this script to user-data.log, syslog, and the console
 # From: https://alestic.com/2010/12/ec2-user-data-output/
@@ -252,12 +252,12 @@ sudo mount -a
 sudo service docker start
 
 echo 'Reinitialize cluster'
-sudo docker swarm init --force-new-cluster --advertise-addr $$(curl -s  http://169.254.169.254/latest/meta-data/local-ipv4)
+sudo docker swarm init --force-new-cluster --advertise-addr $(curl -s  http://169.254.169.254/latest/meta-data/local-ipv4)
 
 echo 'Restart services'
 sudo service docker restart
 
-echo "FINISHED @ $$(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
+echo "FINISHED @ $(date "+%m-%d-%Y %T")" | sudo tee /var/lib/cloud/instance/deployed
 DATA
 
 
