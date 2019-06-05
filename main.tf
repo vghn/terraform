@@ -39,13 +39,6 @@ provider "aws" {
 }
 
 provider "aws" {
-  profile = "orion"
-  alias   = "orion"
-  region  = "us-east-1"
-  version = "~> 2.0"
-}
-
-provider "aws" {
   profile = "mec7"
   alias   = "mec7"
   region  = "us-west-2"
@@ -124,7 +117,7 @@ module "lyra" {
   common_tags = merge(
     local.common_tags,
     {
-      "Account" = "Lyra"
+      "Account" = "lyra"
     },
   )
 }
@@ -145,24 +138,6 @@ module "hydra" {
     local.common_tags,
     {
       "Account" = "hydra"
-    },
-  )
-}
-
-module "orion" {
-  source = "./orion"
-
-  providers = {
-    aws = aws.orion
-  }
-
-  email                      = data.aws_ssm_parameter.email.value
-  terraform_trusted_user_arn = module.ursa.terraform_user_arn
-
-  common_tags = merge(
-    local.common_tags,
-    {
-      "Account" = "ursa"
     },
   )
 }

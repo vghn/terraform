@@ -19,7 +19,7 @@ module "billing" {
   source                  = "../modules/billing"
   notifications_topic_arn = module.notifications.topic_arn
   thresholds              = ["1", "2", "3", "4", "5"]
-  account                 = "Orion"
+  account                 = "MEC7"
 
   common_tags = var.common_tags
 }
