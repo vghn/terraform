@@ -24,4 +24,3 @@ data "aws_ssm_parameter" "cosmin_cf_email" {
 data "aws_ssm_parameter" "cosmin_cf_token" {
   name = "/cosmin/cloudflare/token"
 }
-
