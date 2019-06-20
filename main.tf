@@ -47,15 +47,15 @@ provider "aws" {
 
 provider "cloudflare" {
   version = "~> 1.0"
-  email   = data.aws_ssm_parameter.cf_email.value
-  token   = data.aws_ssm_parameter.cf_token.value
+  email   = data.vault_generic_secret.cloudflare.data["email"]
+  token   = data.vault_generic_secret.cloudflare.data["token"]
 }
 
 provider "cloudflare" {
   alias   = "mec7"
   version = "~> 1.0"
-  email   = data.aws_ssm_parameter.cosmin_cf_email.value
-  token   = data.aws_ssm_parameter.cosmin_cf_token.value
+  email   = data.vault_generic_secret.cosmin_cloudflare.data["email"]
+  token   = data.vault_generic_secret.cosmin_cloudflare.data["token"]
 }
 
 provider "acme" {
@@ -89,10 +89,14 @@ provider "null" {
   version = "~> 2.0"
 }
 
+provider "vault" {
+  version = "~> 2.0"
+}
+
 module "ursa" {
   source = "./ursa"
 
-  email = data.aws_ssm_parameter.email.value
+  email = data.vault_generic_secret.notifications.data["email"]
 
   common_tags = merge(
     local.common_tags,
@@ -109,10 +113,10 @@ module "lyra" {
     aws = aws.lyra
   }
 
-  email                      = data.aws_ssm_parameter.email.value
+  email                      = data.vault_generic_secret.notifications.data["email"]
   terraform_trusted_user_arn = module.ursa.terraform_user_arn
-  cf_email                   = data.aws_ssm_parameter.cf_email.value
-  cf_token                   = data.aws_ssm_parameter.cf_token.value
+  cf_email                   = data.vault_generic_secret.cloudflare.data["email"]
+  cf_token                   = data.vault_generic_secret.cloudflare.data["token"]
 
   common_tags = merge(
     local.common_tags,
@@ -129,10 +133,10 @@ module "hydra" {
     aws = aws.hydra
   }
 
-  email                      = data.aws_ssm_parameter.email.value
+  email                      = data.vault_generic_secret.notifications.data["email"]
   terraform_trusted_user_arn = module.ursa.terraform_user_arn
-  cf_email                   = data.aws_ssm_parameter.cf_email.value
-  cf_token                   = data.aws_ssm_parameter.cf_token.value
+  cf_email                   = data.vault_generic_secret.cloudflare.data["email"]
+  cf_token                   = data.vault_generic_secret.cloudflare.data["token"]
 
   common_tags = merge(
     local.common_tags,
@@ -150,7 +154,7 @@ module "mec7" {
     cloudflare = cloudflare.mec7
   }
 
-  email                      = data.aws_ssm_parameter.email.value
+  email                      = data.vault_generic_secret.notifications.data["email"]
   terraform_trusted_user_arn = module.ursa.terraform_user_arn
 
   common_tags = merge(
@@ -160,4 +164,3 @@ module "mec7" {
     },
   )
 }
-
