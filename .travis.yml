@@ -1,7 +1,7 @@
 dist: xenial
 env:
   TF_VERSION: '0.12.6'
-  VAULT_VERSION: '1.1.3'
+  VAULT_VERSION: '1.2.1'
   VAULT_ADDR: 'https://vault.ghn.me:8200'
 install:
   # Install Hashicorp's Terraform
