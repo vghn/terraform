@@ -9,7 +9,6 @@ Terraform
       Ursa: ${module.ursa.terraform_role_arn}
       Lyra: ${module.lyra.terraform_role_arn}
       Hydra: ${module.hydra.terraform_role_arn}
-      MEC7: ${module.mec7.terraform_role_arn}
 
 VBot
   User: (${module.ursa.vbot_user_arn}): ${module.ursa.vbot_access_key_id} - ${module.ursa.vbot_secret_access_key}
@@ -20,10 +19,9 @@ Prometheus instance: ${module.lyra.prometheus_instance_public_dns} (${module.lyr
 Vault instance: ${module.hydra.vault_instance_public_dns} (${module.hydra.vault_instance_public_ip})
 
 Notification topic arns:
-  - Ursa: ${module.ursa.notifications_topic_arn}
-  - Hydra: ${module.hydra.notifications_topic_arn}
-  - Lyra: ${module.lyra.notifications_topic_arn}
-  - MEC7: ${module.mec7.notifications_topic_arn}
+  Ursa: ${module.ursa.notifications_topic_arn}
+  Hydra: ${module.hydra.notifications_topic_arn}
+  Lyra: ${module.lyra.notifications_topic_arn}
 
 EOF
 

@@ -38,24 +38,10 @@ provider "aws" {
   version = "~> 2.0"
 }
 
-provider "aws" {
-  profile = "mec7"
-  alias   = "mec7"
-  region  = "us-west-2"
-  version = "~> 2.0"
-}
-
 provider "cloudflare" {
   version = "~> 1.0"
   email   = data.vault_generic_secret.cloudflare.data["email"]
   token   = data.vault_generic_secret.cloudflare.data["token"]
-}
-
-provider "cloudflare" {
-  alias   = "mec7"
-  version = "~> 1.0"
-  email   = data.vault_generic_secret.cosmin_cloudflare.data["email"]
-  token   = data.vault_generic_secret.cosmin_cloudflare.data["token"]
 }
 
 provider "acme" {
@@ -142,25 +128,6 @@ module "hydra" {
     local.common_tags,
     {
       "Account" = "hydra"
-    },
-  )
-}
-
-module "mec7" {
-  source = "./mec7"
-
-  providers = {
-    aws        = aws.mec7
-    cloudflare = cloudflare.mec7
-  }
-
-  email                      = data.vault_generic_secret.notifications.data["email"]
-  terraform_trusted_user_arn = module.ursa.terraform_user_arn
-
-  common_tags = merge(
-    local.common_tags,
-    {
-      "Account" = "mec7"
     },
   )
 }
