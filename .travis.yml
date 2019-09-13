@@ -1,6 +1,6 @@
 dist: xenial
 env:
-  TF_VERSION: '0.12.6'
+  TF_VERSION: '0.12.8'
   VAULT_VERSION: '1.2.2'
   VAULT_ADDR: 'https://vault.ghn.me:8200'
 install:
