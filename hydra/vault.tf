@@ -360,13 +360,7 @@ listener "tcp" {
   tls_key_file    = "/opt/vault/tls/vault.ghn.me.key"
 }
 
-storage "s3" {
-  bucket = "${aws_s3_bucket.vault.id}"
-  region = "${data.aws_region.current.name}"
-  kms_key_id = "alias/aws/s3"
-}
-
-ha_storage "dynamodb" {
+storage "dynamodb" {
   ha_enabled = "true"
   region     = "${data.aws_region.current.name}"
   table      = "${aws_dynamodb_table.vault.id}"
