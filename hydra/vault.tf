@@ -307,10 +307,10 @@ data "null_data_source" "vault" {
 }
 
 resource "cloudflare_record" "vault" {
-  domain = "ghn.me"
-  name   = "vault"
-  value  = data.null_data_source.vault.outputs["public_dns"]
-  type   = "CNAME"
+  zone_id = var.cloudflare_zone_id
+  name    = "vault"
+  value   = data.null_data_source.vault.outputs["public_dns"]
+  type    = "CNAME"
 }
 
 # Vault Instance
@@ -342,8 +342,8 @@ sudo aws s3 sync --delete --sse aws:kms s3://${aws_s3_bucket.vault.id}/acme/ca /
 sudo aws s3 sync --delete --sse aws:kms s3://${aws_s3_bucket.vault.id}/acme/vault.ghn.me /root/.acme.sh/vault.ghn.me || true
 
 echo 'Generate/Renew LetsEncrypt certificates'
-export CF_Email="${var.cf_email}"
-export CF_Key="${var.cf_token}"
+export CF_Email="${var.cloudflare_email}"
+export CF_Key="${var.cloudflare_api_key}"
 sudo -E su -c '/root/.acme.sh/acme.sh --issue --dns dns_cf -d vault.ghn.me || true'
 sudo -E su -c '/root/.acme.sh/acme.sh --install-cert -d vault.ghn.me --cert-file /opt/vault/tls/vault.ghn.me.crt --key-file /opt/vault/tls/vault.ghn.me.key --fullchain-file /opt/vault/tls/vault.ghn.me.fullchain.crt'
 

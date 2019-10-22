@@ -6,12 +6,16 @@ variable "terraform_trusted_user_arn" {
   description = "Terraform user ARN"
 }
 
-variable "cf_email" {
+variable "cloudflare_email" {
   description = "CloudFlare EMail"
 }
 
-variable "cf_token" {
+variable "cloudflare_api_key" {
   description = "CloudFlare API Key"
+}
+
+variable "cloudflare_zone_id" {
+  description = "CloudFlare Zone ID"
 }
 
 variable "common_tags" {

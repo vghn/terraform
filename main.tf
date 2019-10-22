@@ -39,9 +39,9 @@ provider "aws" {
 }
 
 provider "cloudflare" {
-  version = "~> 1.0"
+  version = "~> 2.0"
   email   = data.vault_generic_secret.cloudflare.data["email"]
-  token   = data.vault_generic_secret.cloudflare.data["token"]
+  api_key = data.vault_generic_secret.cloudflare.data["api_key"]
 }
 
 provider "acme" {
@@ -101,8 +101,9 @@ module "lyra" {
 
   email                      = data.vault_generic_secret.notifications.data["email"]
   terraform_trusted_user_arn = module.ursa.terraform_user_arn
-  cf_email                   = data.vault_generic_secret.cloudflare.data["email"]
-  cf_token                   = data.vault_generic_secret.cloudflare.data["token"]
+  cloudflare_email           = data.vault_generic_secret.cloudflare.data["email"]
+  cloudflare_api_key         = data.vault_generic_secret.cloudflare.data["api_key"]
+  cloudflare_zone_id         = "9cc5582c31c278418dd6d1420083772c"
 
   common_tags = merge(
     local.common_tags,
@@ -121,8 +122,9 @@ module "hydra" {
 
   email                      = data.vault_generic_secret.notifications.data["email"]
   terraform_trusted_user_arn = module.ursa.terraform_user_arn
-  cf_email                   = data.vault_generic_secret.cloudflare.data["email"]
-  cf_token                   = data.vault_generic_secret.cloudflare.data["token"]
+  cloudflare_email           = data.vault_generic_secret.cloudflare.data["email"]
+  cloudflare_api_key         = data.vault_generic_secret.cloudflare.data["api_key"]
+  cloudflare_zone_id         = "9cc5582c31c278418dd6d1420083772c"
 
   common_tags = merge(
     local.common_tags,

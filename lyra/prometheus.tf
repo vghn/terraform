@@ -212,17 +212,17 @@ data "null_data_source" "prometheus" {
 }
 
 resource "cloudflare_record" "prometheus" {
-  domain = "ghn.me"
-  name   = "prometheus"
-  value  = data.null_data_source.prometheus.outputs["public_dns"]
-  type   = "CNAME"
+  zone_id = var.cloudflare_zone_id
+  name    = "prometheus"
+  value   = data.null_data_source.prometheus.outputs["public_dns"]
+  type    = "CNAME"
 }
 
 resource "cloudflare_record" "logs" {
-  domain = "ghn.me"
-  name   = "logs"
-  value  = data.null_data_source.prometheus.outputs["public_dns"]
-  type   = "CNAME"
+  zone_id = var.cloudflare_zone_id
+  name    = "logs"
+  value   = data.null_data_source.prometheus.outputs["public_dns"]
+  type    = "CNAME"
 }
 
 resource "aws_instance" "prometheus" {
