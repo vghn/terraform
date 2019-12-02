@@ -9,14 +9,14 @@ data "aws_iam_role" "vlad" {
 }
 
 module "notifications" {
-  source = "../modules/notifications"
+  source = "github.com/vghn/terraform-notifications"
   email  = var.email
 
   common_tags = var.common_tags
 }
 
 module "billing" {
-  source                  = "../modules/billing"
+  source                  = "github.com/vghn/terraform-billing"
   notifications_topic_arn = module.notifications.topic_arn
   thresholds              = ["1", "2", "3", "4", "5"]
   account                 = "Lyra"
@@ -25,13 +25,13 @@ module "billing" {
 }
 
 module "cloudwatch_event_watcher" {
-  source = "../modules/cloudwatch_event_watcher"
+  source = "github.com/vghn/terraform-cloudwatch_event_watcher"
 
   common_tags = var.common_tags
 }
 
 module "cloudtrail" {
-  source = "../modules/cloudtrail"
+  source = "github.com/vghn/terraform-cloudtrail"
 
   common_tags = var.common_tags
 }
@@ -66,4 +66,3 @@ module "vpc" {
 
   tags = var.common_tags
 }
-

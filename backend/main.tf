@@ -43,4 +43,3 @@ resource "aws_dynamodb_table" "terraform" {
     type = "S"
   }
 }
-
