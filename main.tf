@@ -40,8 +40,8 @@ provider "aws" {
 
 provider "cloudflare" {
   version = "~> 2.0"
-  email   = data.vault_generic_secret.cloudflare.data["email"]
-  api_key = data.vault_generic_secret.cloudflare.data["api_key"]
+  email   = data.aws_ssm_parameter.cf_email.value
+  api_key = data.aws_ssm_parameter.cf_api_key.value
 }
 
 provider "acme" {
@@ -82,7 +82,7 @@ provider "vault" {
 module "ursa" {
   source = "./ursa"
 
-  email = data.vault_generic_secret.notifications.data["email"]
+  email = data.aws_ssm_parameter.email.value
 
   common_tags = merge(
     local.common_tags,
@@ -99,10 +99,10 @@ module "lyra" {
     aws = aws.lyra
   }
 
-  email                      = data.vault_generic_secret.notifications.data["email"]
+  email                      = data.aws_ssm_parameter.email.value
   terraform_trusted_user_arn = module.ursa.terraform_user_arn
-  cloudflare_email           = data.vault_generic_secret.cloudflare.data["email"]
-  cloudflare_api_key         = data.vault_generic_secret.cloudflare.data["api_key"]
+  cloudflare_email           = data.aws_ssm_parameter.cf_email.value
+  cloudflare_api_key         = data.aws_ssm_parameter.cf_api_key.value
   cloudflare_zone_id         = "9cc5582c31c278418dd6d1420083772c"
 
   common_tags = merge(
@@ -120,10 +120,10 @@ module "hydra" {
     aws = aws.hydra
   }
 
-  email                      = data.vault_generic_secret.notifications.data["email"]
+  email                      = data.aws_ssm_parameter.email.value
   terraform_trusted_user_arn = module.ursa.terraform_user_arn
-  cloudflare_email           = data.vault_generic_secret.cloudflare.data["email"]
-  cloudflare_api_key         = data.vault_generic_secret.cloudflare.data["api_key"]
+  cloudflare_email           = data.aws_ssm_parameter.cf_email.value
+  cloudflare_api_key         = data.aws_ssm_parameter.cf_api_key.value
   cloudflare_zone_id         = "9cc5582c31c278418dd6d1420083772c"
 
   common_tags = merge(
